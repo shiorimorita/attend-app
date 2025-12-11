@@ -1,0 +1,49 @@
+.register {
+    width: 680px;
+    margin: 81px auto 43px auto;
+}
+
+.register__title {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.register__label {
+    line-height: 36px;
+}
+
+.register__input {
+    height: 45px;
+    border-radius: 4px;
+    border: 1px solid #000;
+    padding-left: 16px;
+}
+
+.register__group-name {
+    margin-bottom: 33px;
+}
+
+.register__group-email {
+    margin-bottom: 50px;
+}
+
+.register__group-password {
+    margin-bottom: 46px;
+}
+
+.register__group-password-confirmation {
+    margin-bottom: 93px;
+}
+
+.register__button {
+    height: 60px;
+    border-radius: 5px;
+    font-size: 26px;
+    margin-bottom: 17px;
+}
+
+.register__link {
+    display: block;
+    line-height: 49px;
+    text-align: center;
+}

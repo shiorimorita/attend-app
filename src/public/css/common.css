@@ -1,0 +1,54 @@
+/* common */
+body {
+    font-family: "Inter";
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-size: 24px;
+}
+
+.content {
+    max-width: 1512px;
+    margin: 0 auto;
+}
+
+a {
+    text-decoration: none;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+}
+
+button {
+    width: 100%;
+}
+
+.common-btn {
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+}
+
+.common-link {
+    font-size: 20px;
+    color: #0073CC;
+}
+
+/* header */
+.header {
+    background: #000;
+}
+
+.header__inner {
+    line-height: 82px;
+    max-width: 1515px;
+}
+
+.header__logo {
+    margin-left: 25px;
+}
