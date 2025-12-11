@@ -1,0 +1,26 @@
+.verify-email {
+    width: 720px;
+    margin: 237px auto 0 auto;
+    text-align: center;
+}
+
+.verify-email__message {
+    font-weight: bold;
+    margin-bottom: 62px;
+}
+
+.verify-email__button {
+    display: block;
+    width: 257px;
+    line-height: 69px;
+    background: #d9d9d9;
+    border: 1px solid #000;
+    border-radius: 10px;
+    color: #000;
+    font-weight: bold;
+    margin: 0 auto 52px auto;
+}
+
+.verify-email__link {
+    height: 53px;
+}
