@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AttendanceBreakController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\AttendanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,12 +26,13 @@ Route::get('/login', fn() => view('auth.login'))->name('login')->middleware('red
 Route::get('/admin/login', fn() => view('auth.login'))->name('admin.login')->middleware('redirect.role');
 Route::post('/logout', LogoutController::class)->name('logout');
 
-
 /* staff */
 Route::middleware(['auth', 'role:staff'])->group(function () {
-    Route::get('/attendance', function () {
-        return view('attendance-status');
-    });
+    Route::get('/attendance', [AttendanceController::class, 'index']);
+    Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn']);
+    Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut']);
+    Route::post('/attendance/break-in', [AttendanceBreakController::class, 'breakIn']);
+    Route::post('/attendance/break-out', [AttendanceBreakController::class, 'breakOut']);
 });
 
 /* admin */
