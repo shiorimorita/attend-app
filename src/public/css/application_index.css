@@ -1,0 +1,85 @@
+body {
+    background: #F0EFF2;
+}
+
+.application {
+    width: 900px;
+    margin: 78px auto 170px auto;
+}
+
+.application__title {
+    font-size: 30px;
+    padding-left: 21px;
+    border-left: 8px solid #000;
+    margin-bottom: 61px;
+}
+
+.application__links {
+    padding-bottom: 17px;
+    border-bottom: 1px solid #000;
+    display: flex;
+    align-items: center;
+    gap: 106px;
+    margin-bottom: 44px;
+}
+
+.application__link {
+    font-size: 16px;
+    letter-spacing: 0.15rem;
+    color: #000;
+}
+
+.application__link:first-of-type {
+    margin-left: 45px;
+}
+
+.application__table {
+    width: 100%;
+    font-size: 16px;
+    color: #737373;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.application__table-header,
+.application__table-detail {
+    border-bottom: 3px solid #E1E1E1;
+    text-align: left;
+    letter-spacing: 0.15em;
+    padding: 14px 0;
+}
+
+/* 状態 */
+.application__table-header:first-of-type {
+    width: 180px;
+    padding-left: 55px;
+}
+
+.application__table-detail:first-of-type {
+    padding-left: 37px;
+}
+
+.application__table-header:nth-of-type(2) {
+    width: 125px;
+}
+
+.application__table-header:nth-of-type(3) {
+    width: 164px;
+}
+
+.application__table-header:nth-of-type(4),
+.application__table-header:nth-of-type(5) {
+    width: 155px;
+}
+
+.application__table-detail:last-of-type {
+    color: #000;
+}
+
+.application__table-row:last-child .application__table-detail,
+.application__table-row:last-child .application__table-header {
+    border-bottom: none;
+}

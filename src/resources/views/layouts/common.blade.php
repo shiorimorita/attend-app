@@ -19,6 +19,30 @@
                     <img src="{{asset('images/header.png')}}" alt="" class="header__logo-img">
                 </a>
             </h1>
+            <nav class="header__nav">
+                <ul class="header__nav-list">
+                    <li class="header__nav-item">
+                        <a href="" class="header__nav-link">勤怠</a>
+                    </li>
+                    <li class="header__nav-item">
+                        <a href="" class="header__nav-link">勤怠一覧</a>
+                    </li>
+                    <li class="header__nav-item">
+                        <a href="" class="header__nav-link">申請</a>
+                    </li>
+                    @if(Auth::check())
+                    <li class="header__nav-item">
+                        <form action="/logout" method="post" class="header__logout-form">
+                            <button type="submit" class="header__nav-button">ログアウト</button>
+                        </form>
+                    </li>
+                    @else
+                    <li class="header__nav-item">
+                        <a href="/login" class="header__nav-link">ログイン</a>
+                    </li>
+                    @endif
+                </ul>
+            </nav>
         </div>
     </header>
     <div class="content">

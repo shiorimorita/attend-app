@@ -11,6 +11,10 @@ body {
     margin: 0 auto;
 }
 
+li {
+    list-style: none;
+}
+
 a {
     text-decoration: none;
 }
@@ -47,8 +51,17 @@ button {
 .header__inner {
     line-height: 82px;
     max-width: 1515px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 46px 0 25px;
 }
 
-.header__logo {
-    margin-left: 25px;
+.header__nav-list {
+    display: flex;
+    gap: 41px;
+}
+
+.header__nav-link {
+    color: #fff;
+    font-weight: bold;
 }

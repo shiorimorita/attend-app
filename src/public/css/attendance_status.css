@@ -1,0 +1,40 @@
+body {
+    background: #F0EFF2;
+}
+
+.attendance__status {
+    margin: 209px auto 280px auto;
+    width: 680px;
+    text-align: center;
+}
+
+.attendance__status-text {
+    font-size: 18px;
+    color: #696969;
+    font-weight: bold;
+    background: #C8C8C8;
+    border-radius: 50px;
+    width: 100px;
+    margin: 0 auto;
+    line-height: 40px;
+    margin-bottom: 32px;
+}
+
+.attendance__status-date {
+    font-size: 40px;
+    line-height: 48px;
+    margin-bottom: 32px;
+}
+
+.attendance__status-time {
+    font-size: 80px;
+    font-weight: bold;
+    line-height: 97px;
+    margin-bottom: 87px;
+}
+
+.attendance__status-button {
+    width: 221px;
+    line-height: 77px;
+    border-radius: 20px;
+}

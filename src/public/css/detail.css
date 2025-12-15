@@ -1,0 +1,129 @@
+body {
+    background: #F0EFF2;
+}
+
+.attendance__detail {
+    width: 900px;
+    margin: 93px auto 77px auto;
+}
+
+.attendance__detail-title {
+    font-size: 30px;
+    margin-bottom: 55px;
+    padding-left: 21px;
+    border-left: 8px solid #000;
+}
+
+.attendance__form-inner {
+    background: #fff;
+    border-radius: 10px;
+    font-size: 16px;
+    letter-spacing: 0.15rem;
+    margin-bottom: 36px;
+}
+
+.attendance__form-group {
+    display: grid;
+    align-items: center;
+    width: 100%;
+    border-bottom: 2px solid #E1E1E1;
+}
+
+.attendance__form-group--input {
+    grid-template-columns: 333px 1fr;
+}
+
+.attendance__form-group--display {
+    grid-template-columns: 357px 1fr;
+}
+
+.attendance__form-group:last-child {
+    border-bottom: none;
+}
+
+.attendance__form-inner input,
+.attendance__form-inner textarea {
+    letter-spacing: 0.15rem;
+}
+
+.attendance__form-value {
+    font-weight: bold;
+}
+
+/* 名前 */
+.attendance__form-group:first-of-type {
+    padding: 36px 0 24px 0;
+}
+
+/* 日付 */
+.attendance__form-group:nth-of-type(2) {
+    padding: 35px 0;
+}
+
+/* 出勤 */
+.attendance__form-group:nth-of-type(3) {
+    padding: 31px 0 32px 0;
+}
+
+/* 休憩 */
+.attendance__form-group:nth-of-type(4) {
+    padding: 40px 0 36px 0;
+}
+
+/* 休憩2 */
+.attendance__form-group:nth-of-type(5) {
+    padding: 36px 0 40px 0;
+}
+
+/* 備考 */
+.attendance__form-group:last-of-type {
+    padding: 40px 0 47px 0;
+}
+
+.attendance__form-label {
+    color: #737373;
+    font-weight: bold;
+    margin-left: 64px;
+}
+
+.attendance__date-value {
+    display: flex;
+    gap: 142px;
+}
+
+.attendance__form-value {
+    display: flex;
+    align-items: center;
+}
+
+.attendance__name-space {
+    width: 1em;
+}
+
+.attendance__input-time {
+    border: 1px solid #E1E1E1;
+    border-radius: 4px;
+    width: 103px;
+    line-height: 29px;
+    padding: 5px 21px;
+}
+
+.attendance__remark-textarea {
+    width: 316px;
+    height: 72px;
+    border: 1px solid #E1E1E1;
+    border-radius: 4px;
+    padding: 5px 0 0 12px;
+}
+
+.attendance__input-separator {
+    margin: 0 43px 0 51px;
+}
+
+.attendance__form-submit {
+    width: 130px;
+    line-height: 50px;
+    border-radius: 5px;
+    margin-left: auto;
+    display: block;
+}

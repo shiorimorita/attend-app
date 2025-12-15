@@ -1,0 +1,70 @@
+body {
+    background: #F0EFF2;
+}
+
+.staff__list {
+    width: 900px;
+    margin: 126px auto 325px auto;
+}
+
+.staff__list-title {
+    font-size: 30px;
+    line-height: 36px;
+    padding-left: 21px;
+    border-left: 8px solid #000;
+    margin-bottom: 98px;
+}
+
+.staff__list-table {
+    width: 100%;
+    font-size: 16px;
+    color: #737373;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.staff__list-header,
+.staff__list-detail {
+    padding: 14px 0 12px 0;
+}
+
+.staff__list-detail,
+.staff__list-header {
+    border-bottom: 3px solid #E1E1E1;
+    text-align: center;
+    letter-spacing: 0.15em;
+    padding: 14px 0;
+}
+
+.staff__list-row:last-child .staff__list-detail,
+.staff__list-row:last-child .staff__list-header {
+    border-bottom: none;
+}
+
+.staff__list-header:first-of-type,
+.staff__list-detail:first-of-type {
+    padding-left: 171px;
+    width: 302px;
+}
+
+.staff__list-header:nth-of-type(2),
+.staff__list-header:nth-of-type(2) {
+    width: 334px;
+}
+
+.staff__list-header:last-of-type,
+.staff__list-detail:last-of-type {
+    text-align: left;
+}
+
+.staff__list-header:last-of-type {
+    padding-left: 56px;
+}
+
+.staff__list-detail:last-of-type {
+    padding-left: 78px;
+    color: #000;
+}

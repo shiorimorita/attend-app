@@ -1,0 +1,121 @@
+body {
+    background: #F0EFF2;
+}
+
+.attendances {
+    width: 900px;
+    margin: 91px auto 114px auto;
+}
+
+.attendances__title {
+    font-size: 30px;
+    line-height: 36px;
+    padding-left: 21px;
+    border-left: 8px solid #000;
+    margin-bottom: 43px;
+}
+
+.attendances__pager {
+    display: flex;
+    background: #fff;
+    justify-content: space-between;
+    height: 60px;
+    align-items: center;
+    border-radius: 10px;
+    margin-bottom: 46px;
+}
+
+.attendances__pager-prev,
+.attendances__pager-next,
+.attendances__pager-current {
+    display: flex;
+    align-items: center;
+}
+
+.attendances__pager-current-label {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.attendances__pager-prev,
+.attendances__pager-next {
+    gap: 4px;
+    letter-spacing: 0.15em;
+}
+
+.attendances__pager-current {
+    gap: 11px;
+}
+
+.attendances__pager-prev {
+    margin-left: 25px;
+}
+
+.attendances__pager-next {
+    margin-right: 24px;
+}
+
+.attendances__pager-prev-img,
+.attendances__pager-next-img {
+    width: 20px;
+    height: 15px;
+}
+
+.attendances__pager-prev-label,
+.attendances__pager-next-label {
+    font-weight: bold;
+    font-size: 16px;
+    color: #737373;
+}
+
+.attendances__list {
+    width: 100%;
+    font-size: 16px;
+    color: #737373;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.attendances__list-detail,
+.attendances__list-header {
+    border-bottom: 3px solid #E1E1E1;
+    text-align: left;
+    letter-spacing: 0.15em;
+    padding: 14px 0;
+}
+
+.attendances__list-row:last-child .attendances__list-detail,
+.attendances__list-row:last-child .attendances__list-header {
+    border-bottom: none;
+}
+
+/* 日付 */
+.attendances__list-header-date {
+    padding-left: 55px;
+    width: 246px;
+}
+
+.attendances__list-date {
+    padding-left: 55px;
+}
+
+.attendances__list-header--shift {
+    width: 133px;
+}
+
+.attendances__list-header--shift:nth-child(2),
+.attendances__list-header--shift:nth-child(3) {
+    padding-left: 10px;
+}
+
+.attendances__list-header--shift:nth-child(4),
+.attendances__list-header--shift:nth-child(5) {
+    padding-left: 5px;
+}
+
+.attendances__list-detail-link-text {
+    color: #000;
+}
