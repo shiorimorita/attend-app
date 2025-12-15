@@ -8,9 +8,6 @@ body {
 }
 
 .application__title {
-    font-size: 30px;
-    padding-left: 21px;
-    border-left: 8px solid #000;
     margin-bottom: 61px;
 }
 
@@ -24,7 +21,6 @@ body {
 }
 
 .application__link {
-    font-size: 16px;
     letter-spacing: 0.15rem;
     color: #000;
 }
@@ -33,22 +29,9 @@ body {
     margin-left: 45px;
 }
 
-.application__table {
-    width: 100%;
-    font-size: 16px;
-    color: #737373;
-    table-layout: fixed;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 10px;
-    font-weight: bold;
-}
-
 .application__table-header,
 .application__table-detail {
-    border-bottom: 3px solid #E1E1E1;
     text-align: left;
-    letter-spacing: 0.15em;
     padding: 14px 0;
 }
 
@@ -73,13 +56,4 @@ body {
 .application__table-header:nth-of-type(4),
 .application__table-header:nth-of-type(5) {
     width: 155px;
-}
-
-.application__table-detail:last-of-type {
-    color: #000;
-}
-
-.application__table-row:last-child .application__table-detail,
-.application__table-row:last-child .application__table-header {
-    border-bottom: none;
 }

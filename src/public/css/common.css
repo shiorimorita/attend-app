@@ -3,7 +3,7 @@ body {
     font-family: "Inter";
     font-optical-sizing: auto;
     font-weight: 400;
-    font-size: 24px;
+    font-size: 16px;
 }
 
 .content {
@@ -43,6 +43,39 @@ button {
     color: #0073CC;
 }
 
+.common-table-title {
+    font-size: 30px;
+    line-height: 36px;
+    padding-left: 21px;
+    border-left: 8px solid #000;
+    margin-bottom: 98px;
+}
+
+.common-table {
+    width: 100%;
+    color: #737373;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.common-table th,
+.common-table td {
+    border-bottom: 3px solid #E1E1E1;
+    letter-spacing: 0.15em;
+}
+
+.common-table tr:last-child th,
+.common-table tr:last-child td {
+    border-bottom: none;
+}
+
+.common-table td:last-child {
+    color: #000;
+}
+
 /* header */
 .header {
     background: #000;
@@ -59,6 +92,7 @@ button {
 .header__nav-list {
     display: flex;
     gap: 41px;
+    font-size: 24px;
 }
 
 .header__nav-link {

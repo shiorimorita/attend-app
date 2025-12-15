@@ -1,10 +1,10 @@
 @extends('layouts.common')
 @section('css')
-<link rel="stylesheet" href="{{asset('css/attendance_index.css')}}">
+<link rel="stylesheet" href="{{asset('css/attendance-index.css')}}">
 @endsection
 @section('content')
 <main class="attendances">
-    <h2 class="attendances__title">勤怠一覧</h2>
+    <h2 class="attendances__title common-table-title">勤怠一覧</h2>
     <div class="attendances__pager">
         <div class="attendances__pager-prev">
             <img src="{{asset('images/arrow-left.png')}}" alt="前月の勤怠" class="attendances__pager-prev-img">
@@ -19,7 +19,7 @@
             <img src="{{asset('images/arrow-right.png')}}" alt="翌月の勤怠" class="attendances__pager-next-img">
         </div>
     </div>
-    <table class="attendances__list">
+    <table class="common-table">
         <tr class="attendances__list-row">
             <th class="attendances__list-header attendances__list-header-date application__list-header">日付</th>
             <th class="attendances__list-header attendances__list-header--shift">出勤</th>

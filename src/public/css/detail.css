@@ -8,16 +8,12 @@ body {
 }
 
 .attendance__detail-title {
-    font-size: 30px;
     margin-bottom: 55px;
-    padding-left: 21px;
-    border-left: 8px solid #000;
 }
 
 .attendance__form-inner {
     background: #fff;
     border-radius: 10px;
-    font-size: 16px;
     letter-spacing: 0.15rem;
     margin-bottom: 36px;
 }

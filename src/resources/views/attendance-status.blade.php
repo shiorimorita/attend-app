@@ -1,6 +1,6 @@
 @extends('layouts.common')
 @section('css')
-<link rel="stylesheet" href="{{asset('css/attendance_status.css')}}">
+<link rel="stylesheet" href="{{asset('css/attendance-status.css')}}">
 @endsection
 @section('content')
 <main class="attendance__status">

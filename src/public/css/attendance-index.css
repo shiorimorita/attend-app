@@ -8,10 +8,6 @@ body {
 }
 
 .attendances__title {
-    font-size: 30px;
-    line-height: 36px;
-    padding-left: 21px;
-    border-left: 8px solid #000;
     margin-bottom: 43px;
 }
 
@@ -64,32 +60,13 @@ body {
 .attendances__pager-prev-label,
 .attendances__pager-next-label {
     font-weight: bold;
-    font-size: 16px;
     color: #737373;
-}
-
-.attendances__list {
-    width: 100%;
-    font-size: 16px;
-    color: #737373;
-    table-layout: fixed;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 10px;
-    font-weight: bold;
 }
 
 .attendances__list-detail,
 .attendances__list-header {
-    border-bottom: 3px solid #E1E1E1;
     text-align: left;
-    letter-spacing: 0.15em;
     padding: 14px 0;
-}
-
-.attendances__list-row:last-child .attendances__list-detail,
-.attendances__list-row:last-child .attendances__list-header {
-    border-bottom: none;
 }
 
 /* 日付 */
@@ -114,8 +91,4 @@ body {
 .attendances__list-header--shift:nth-child(4),
 .attendances__list-header--shift:nth-child(5) {
     padding-left: 5px;
-}
-
-.attendances__list-detail-link-text {
-    color: #000;
 }

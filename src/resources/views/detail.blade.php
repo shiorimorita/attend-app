@@ -4,7 +4,7 @@
 @endsection
 @section('content')
 <main class="attendance__detail">
-    <h2 class="attendance__detail-title">勤怠詳細</h2>
+    <h2 class="attendance__detail-title common-table-title">勤怠詳細</h2>
     <form class="attendance__form" method="post" action="">
         @csrf
         <div class="attendance__form-inner">

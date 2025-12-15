@@ -1,11 +1,11 @@
 @extends('layouts.common')
 @section('css')
-<link rel="stylesheet" href="{{asset('css/staff_index.css')}}">
+<link rel="stylesheet" href="{{asset('css/staff-index.css')}}">
 @endsection
 @section('content')
 <main class="staff__list">
-    <h2 class="staff__list-title">スタッフ一覧</h2>
-    <table class="staff__list-table">
+    <h2 class="staff__list-title common-table-title">スタッフ一覧</h2>
+    <table class="common-table">
         <tr class="staff__list-row">
             <th class="staff__list-header">名前</th>
             <th class="staff__list-header">メールアドレス</th>

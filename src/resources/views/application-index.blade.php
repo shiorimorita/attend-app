@@ -1,15 +1,15 @@
 @extends('layouts.common')
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/application_index.css') }}">
+<link rel="stylesheet" href="{{ asset('css/application-index.css') }}">
 @endsection
 @section('content')
 <main class="application">
-    <h2 class="application__title">申請一覧</h2>
+    <h2 class="application__title common-table-title">申請一覧</h2>
     <div class="application__links">
         <a href="" class="application__link">承認待ち</a>
         <a href="" class="application__link">承認済み</a>
     </div>
-    <table class="application__table">
+    <table class="common-table">
         <tr class="application__table-row">
             <th class="application__table-header">状態</th>
             <th class="application__table-header">名前</th>
