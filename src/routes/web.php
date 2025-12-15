@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LogoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('staff-index');
+// Route::get('/', function () {
+//     return view('staff-index');
+// });
+
+/* 未ログイン */
+
+Route::get('/login', fn() => view('auth.login'))->name('login')->middleware('redirect.role');
+Route::get('/admin/login', fn() => view('auth.login'))->name('admin.login')->middleware('redirect.role');
+Route::post('/logout', LogoutController::class)->name('logout');
+
+
+/* staff */
+Route::middleware(['auth', 'role:staff'])->group(function () {
+    Route::get('/attendance', function () {
+        return view('attendance-status');
+    });
+});
+
+/* admin */
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/attendance/list', function () {
+        return view('staff-index');
+    });
 });

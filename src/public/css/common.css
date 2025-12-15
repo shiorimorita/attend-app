@@ -95,7 +95,8 @@ button {
     font-size: 24px;
 }
 
-.header__nav-link {
+.header__nav-link,
+.header__nav-button {
     color: #fff;
     font-weight: bold;
 }
