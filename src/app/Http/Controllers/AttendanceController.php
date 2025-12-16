@@ -37,7 +37,7 @@ class AttendanceController extends Controller
             'days',
             'month',
             'prevMonth',
-            'nextMonth'
+            'nextMonth',
         ));
     }
 
@@ -68,5 +68,12 @@ class AttendanceController extends Controller
     {
         Attendance::where('user_id', Auth::id())->whereDate('date', today())->update(['clock_out' => now()]);
         return redirect('/attendance');
+    }
+
+    public function edit($id)
+    {
+        $attendance = Attendance::with('breaks')->findOrFail($id);
+
+        return view('attendance-check', compact('attendance'));
     }
 }

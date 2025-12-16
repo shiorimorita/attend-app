@@ -34,6 +34,7 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut']);
     Route::post('/attendance/break-in', [AttendanceBreakController::class, 'breakIn']);
     Route::post('/attendance/break-out', [AttendanceBreakController::class, 'breakOut']);
+    Route::get('/attendance/detail/{id}', [AttendanceController::class, 'edit']);
 });
 
 /* admin */

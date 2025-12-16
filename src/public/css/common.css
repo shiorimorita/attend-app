@@ -72,7 +72,7 @@ button {
     border-bottom: none;
 }
 
-.common-table td:last-child {
+.common-table td:last-child a {
     color: #000;
 }
 

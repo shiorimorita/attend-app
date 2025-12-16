@@ -62,12 +62,12 @@ body {
 }
 
 /* 休憩 */
-.attendance__form-group:nth-of-type(4) {
+.attendance__form-label-break {
     padding: 40px 0 36px 0;
 }
 
 /* 休憩2 */
-.attendance__form-group:nth-of-type(5) {
+.attendance__form-group:nth-last-of-type(2) {
     padding: 36px 0 40px 0;
 }
 

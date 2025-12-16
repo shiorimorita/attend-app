@@ -37,7 +37,11 @@
             <td class="attendances__list-detail">{{$day['attendance']?->breakTime() ?? ''}}</td>
             <td class="attendances__list-detail">{{$day['attendance']?->totalTime() ?? ''}}</td>
             <td class="attendances__list-detail">
-                <a href="#" class="attendances__list-detail-link-text">詳細</a>
+                @if($day['attendance'])
+                <a href="/attendance/detail/{{$day['attendance']->id}}" class="attendances__list-detail-link-text">詳細</a>
+                @else
+                <span class="attendances__list-detail-link-text">詳細</span>
+                @endif
             </td>
         </tr>
         @endforeach
