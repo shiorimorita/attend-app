@@ -4,6 +4,7 @@ use App\Http\Controllers\AttendanceBreakController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AttendanceCorrectionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,8 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     Route::post('/attendance/break-in', [AttendanceBreakController::class, 'breakIn']);
     Route::post('/attendance/break-out', [AttendanceBreakController::class, 'breakOut']);
     Route::get('/attendance/detail/{id}', [AttendanceController::class, 'edit']);
+    Route::post('/attendance/detail/{id}', [AttendanceCorrectionController::class, 'store']);
+    Route::get('/stamp_correction_request/list', [AttendanceCorrectionController::class, 'index']);
 });
 
 /* admin */

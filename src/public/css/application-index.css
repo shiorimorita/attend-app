@@ -29,6 +29,11 @@ body {
     margin-left: 45px;
 }
 
+.application__link.is-active {
+    font-weight: bold;
+    color: #000;
+}
+
 .application__table-header,
 .application__table-detail {
     text-align: left;

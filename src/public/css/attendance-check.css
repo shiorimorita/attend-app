@@ -123,3 +123,11 @@ body {
     margin-left: auto;
     display: block;
 }
+
+.attendance__notice {
+    letter-spacing: 0.15rem;
+    color: rgba(255, 0, 0, 0.5);
+    text-align: right;
+    font-weight: bolder;
+    font-size: 18px;
+}

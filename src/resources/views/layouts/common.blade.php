@@ -15,7 +15,7 @@
     <header class="header">
         <div class="header__inner">
             <h1 class="header__logo">
-                <a href="/" class="header__logo-link">
+                <a href="/attendance" class="header__logo-link">
                     <img src="{{asset('images/header.png')}}" alt="" class="header__logo-img">
                 </a>
             </h1>
@@ -30,7 +30,7 @@
                         <a href="/attendance/list" class="header__nav-link">勤怠一覧</a>
                     </li>
                     <li class="header__nav-item">
-                        <a href="" class="header__nav-link">申請</a>
+                        <a href="/stamp_correction_request/list" class="header__nav-link">申請</a>
                     </li>
                     @endif
                     @if(Auth::user()->role === 'admin')

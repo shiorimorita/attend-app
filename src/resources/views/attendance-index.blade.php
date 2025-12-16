@@ -32,10 +32,10 @@
         @foreach($days as $day)
         <tr class="attendances__list-row">
             <td class="attendances__list-detail attendances__list-date application__list-detail">{{$day['date']->format('m/d')}}({{$day['date']->isoFormat('ddd')}})</td>
-            <td class="attendances__list-detail">{{$day['attendance']?->clock_in ? \Carbon\Carbon::parse($day['attendance']->clock_in)->format('H:i') : '' }}</td>
-            <td class="attendances__list-detail">{{$day['attendance']?->clock_out ? \Carbon\Carbon::parse($day['attendance']->clock_out)->format('H:i') : ''}}</td>
-            <td class="attendances__list-detail">{{$day['attendance']?->breakTime() ?? ''}}</td>
-            <td class="attendances__list-detail">{{$day['attendance']?->totalTime() ?? ''}}</td>
+            <td class="attendances__list-detail">{{$day['attendance'] ?->clock_in?->format('H:i') ?? ''}}</td>
+            <td class="attendances__list-detail">{{$day['attendance']?->clock_out?->format('H:i') ?? ''}}</td>
+            <td class="attendances__list-detail">{{ $day['attendance']?->breakTime() ?? '' }}</td>
+            <td class="attendances__list-detail">{{ $day['attendance']?->totalTime() ?? '' }}</td>
             <td class="attendances__list-detail">
                 @if($day['attendance'])
                 <a href="/attendance/detail/{{$day['attendance']->id}}" class="attendances__list-detail-link-text">詳細</a>

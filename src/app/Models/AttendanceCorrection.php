@@ -5,25 +5,33 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AttendanceBreak extends Model
+class AttendanceCorrection extends Model
 {
     use HasFactory;
 
     protected $fillable =
     [
+        'user_id',
         'attendance_id',
-        'break_in',
-        'break_out',
+        'approved_by',
+        'clock_in',
+        'clock_out',
+        'description',
     ];
 
-    protected $casts = [
-        'break_in'  => 'datetime:H:i:s',
-        'break_out' => 'datetime:H:i:s',
-    ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function attendance()
     {
         return $this->belongsTo(Attendance::class);
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     public function breakCorrections()

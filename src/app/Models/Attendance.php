@@ -17,6 +17,12 @@ class Attendance extends Model
         'clock_out',
     ];
 
+    protected $casts = [
+        'date'      => 'date',
+        'clock_in'  => 'datetime:H:i:s',
+        'clock_out' => 'datetime:H:i:s',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -25,46 +31,6 @@ class Attendance extends Model
     public function breaks()
     {
         return $this->hasMany(AttendanceBreak::class);
-    }
-
-    private function toDateTime(string $date, ?string $time): ?Carbon
-    {
-        if (!$date || !$time) return null;
-
-        // "H:i" なら "H:i:s" に寄せる
-        if (preg_match('/^\d{1,2}:\d{2}$/', $time)) {
-            $time .= ':00';
-        }
-
-        // date が "Y-m-d" 前提
-        return Carbon::createFromFormat('Y-m-d H:i:s', "{$date} {$time}");
-    }
-
-    public function boundMinutes(): int
-    {
-        $in  = $this->toDateTime($this->date, $this->clock_in);
-        $out = $this->toDateTime($this->date, $this->clock_out);
-        if (!$in || !$out) return 0;
-
-        if ($out->lt($in)) $out->addDay();
-
-        return $in->diffInMinutes($out);
-    }
-
-    public function breakMinutes(): int
-    {
-        return $this->breaks->sum(function ($b) {
-            if (!$b->break_in || !$b->break_out) return 0;
-
-            $in = $this->toDateTime($this->date, $b->break_in);
-            $out = $this->toDateTime($this->date, $b->break_out);
-            if (!$in || !$out) return 0;
-
-            if ($out->lt($in)) {
-                $out->addDay();
-            }
-            return $in->diffInMinutes($out);
-        });
     }
 
     public function workMinutes(): int
@@ -79,6 +45,41 @@ class Attendance extends Model
         return sprintf('%d:%02d', $h, $m);
     }
 
+    public function boundMinutes(): int
+    {
+        if (!$this->clock_in || !$this->clock_out) {
+            return 0;
+        }
+
+        $in  = $this->clock_in->copy();
+        $out = $this->clock_out->copy();
+
+        // 日跨ぎ対応
+        if ($out->lt($in)) {
+            $out->addDay();
+        }
+
+        return $in->diffInMinutes($out);
+    }
+
+    public function breakMinutes(): int
+    {
+        return $this->breaks->sum(function ($b) {
+            if (!$b->break_in || !$b->break_out) {
+                return 0;
+            }
+
+            $in  = $b->break_in->copy();
+            $out = $b->break_out->copy();
+
+            if ($out->lt($in)) {
+                $out->addDay();
+            }
+
+            return $in->diffInMinutes($out);
+        });
+    }
+
     public function breakTime(): string
     {
         return $this->formatMinutes($this->breakMinutes());
@@ -87,5 +88,10 @@ class Attendance extends Model
     public function totalTime(): string
     {
         return $this->formatMinutes($this->workMinutes());
+    }
+
+    public function attendanceCorrections()
+    {
+        return $this->hasMany(AttendanceCorrection::class);
     }
 }

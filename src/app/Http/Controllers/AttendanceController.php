@@ -20,7 +20,7 @@ class AttendanceController extends Controller
         /* $nextMonth = 今月 */
         $nextMonth = $month->copy()->addMonth()->format('Y-m');
         /* whereBetween('date', [A, B]) date が月初から月末まで入っている対象ユーザーの勤怠を取得 */
-        $attendances = Attendance::with('breaks')->where('user_id', Auth::id())->whereBetween('date', [$month->toDateString(), $month->copy()->endOfMonth()->toDateString()])->get()->keyBy(fn($a) => $a->date);
+        $attendances = Attendance::with('breaks')->where('user_id', Auth::id())->whereBetween('date', [$month->toDateString(), $month->copy()->endOfMonth()->toDateString()])->get()->keyBy(fn($a) => $a->date->toDateString());
         /* $period = 月のカレンダー*/
         $period = CarbonPeriod::create($month, $month->copy()->endOfMonth());
         /* $days = 月のカレンダー+対象ユーザーの勤怠情報付き */
