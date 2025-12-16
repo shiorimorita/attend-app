@@ -28,6 +28,7 @@ Route::post('/logout', LogoutController::class)->name('logout');
 
 /* staff */
 Route::middleware(['auth', 'role:staff'])->group(function () {
+    Route::get('/attendance/list', [AttendanceController::class, 'myAttendances']);
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn']);
     Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut']);

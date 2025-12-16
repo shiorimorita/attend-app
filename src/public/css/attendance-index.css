@@ -28,19 +28,21 @@ body {
     align-items: center;
 }
 
+.attendances__pager-current {
+    gap: 11px;
+}
+
 .attendances__pager-current-label {
     font-size: 20px;
     font-weight: bold;
+    line-height: auto;
+    display: block;
 }
 
 .attendances__pager-prev,
 .attendances__pager-next {
     gap: 4px;
     letter-spacing: 0.15em;
-}
-
-.attendances__pager-current {
-    gap: 11px;
 }
 
 .attendances__pager-prev {
@@ -67,6 +69,14 @@ body {
 .attendances__list-header {
     text-align: left;
     padding: 14px 0;
+}
+
+.attendances__pager-current-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
 }
 
 /* 日付 */

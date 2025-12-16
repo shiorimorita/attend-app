@@ -24,10 +24,10 @@
                 <ul class="header__nav-list">
                     @if(Auth::user()->role === 'staff')
                     <li class="header__nav-item">
-                        <a href="" class="header__nav-link">勤怠</a>
+                        <a href="/attendance" class="header__nav-link">勤怠</a>
                     </li>
                     <li class="header__nav-item">
-                        <a href="" class="header__nav-link">勤怠一覧</a>
+                        <a href="/attendance/list" class="header__nav-link">勤怠一覧</a>
                     </li>
                     <li class="header__nav-item">
                         <a href="" class="header__nav-link">申請</a>

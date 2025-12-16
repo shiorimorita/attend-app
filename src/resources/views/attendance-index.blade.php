@@ -6,18 +6,19 @@
 <main class="attendances">
     <h2 class="attendances__title common-table-title">勤怠一覧</h2>
     <div class="attendances__pager">
-        <div class="attendances__pager-prev">
+        <a href="/attendance/list?month={{$prevMonth}}" class="attendances__pager-prev">
             <img src="{{asset('images/arrow-left.png')}}" alt="前月の勤怠" class="attendances__pager-prev-img">
             <p class="attendances__pager-prev-label">前月</p>
-        </div>
-        <div class="attendances__pager-current">
-            <img src="{{asset('images/calendar.png')}}" alt="カレンダー" class="attendances__pager-calendar-img">
-            <span class="attendances__pager-current-label">2023/06</span>
-        </div>
-        <div class="attendances__pager-next">
+        </a>
+        <form action="/attendance/list" method="get" class="attendances__pager-current">
+            <img src="{{asset('images/calendar.png')}}" alt="カレンダー" class="attendances__pager-calendar-img" onclick="document.querySelector('.attendances__pager-current-input').showPicker()">
+            <input type="month" name="month" class="attendances__pager-current-input" onchange="this.form.submit()" value="{{$month->format('Y:m')}}">
+            <span class="attendances__pager-current-label">{{$month->format('Y/m')}}</span>
+        </form>
+        <a href="/attendance/list?month={{$nextMonth}}" class="attendances__pager-next">
             <p class="attendances__pager-next-label">翌月</p>
             <img src="{{asset('images/arrow-right.png')}}" alt="翌月の勤怠" class="attendances__pager-next-img">
-        </div>
+        </a>
     </div>
     <table class="common-table">
         <tr class="attendances__list-row">
@@ -28,16 +29,18 @@
             <th class="attendances__list-header attendances__list-header--shift">合計</th>
             <th class="attendances__list-header">詳細</th>
         </tr>
+        @foreach($days as $day)
         <tr class="attendances__list-row">
-            <td class="attendances__list-detail attendances__list-date application__list-detail">06/03(土)</td>
-            <td class="attendances__list-detail">09:00</td>
-            <td class="attendances__list-detail">18:00</td>
-            <td class="attendances__list-detail">1:00</td>
-            <td class="attendances__list-detail">8:00</td>
+            <td class="attendances__list-detail attendances__list-date application__list-detail">{{$day['date']->format('m/d')}}({{$day['date']->isoFormat('ddd')}})</td>
+            <td class="attendances__list-detail">{{$day['attendance']?->clock_in ? \Carbon\Carbon::parse($day['attendance']->clock_in)->format('H:i') : '' }}</td>
+            <td class="attendances__list-detail">{{$day['attendance']?->clock_out ? \Carbon\Carbon::parse($day['attendance']->clock_out)->format('H:i') : ''}}</td>
+            <td class="attendances__list-detail">{{$day['attendance']?->breakTime() ?? ''}}</td>
+            <td class="attendances__list-detail">{{$day['attendance']?->totalTime() ?? ''}}</td>
             <td class="attendances__list-detail">
                 <a href="#" class="attendances__list-detail-link-text">詳細</a>
             </td>
         </tr>
+        @endforeach
     </table>
 </main>
 @endsection
