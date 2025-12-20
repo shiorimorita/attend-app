@@ -76,6 +76,10 @@ button {
     color: #000;
 }
 
+.input-error {
+    color: #FF0000;
+}
+
 /* header */
 .header {
     background: #000;

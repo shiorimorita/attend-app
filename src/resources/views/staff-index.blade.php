@@ -11,11 +11,15 @@
             <th class="staff__list-header">メールアドレス</th>
             <th class="staff__list-header">月次勤怠</th>
         </tr>
+        @foreach($users as $user)
         <tr class="staff__list-row">
-            <td class="staff__list-detail">西&nbsp;怜奈</td>
-            <td class="staff__list-detail">reina.n@coachtech.com</td>
-            <td class="staff__list-detail">詳細</td>
+            <td class="staff__list-detail">{{$user->name}}</td>
+            <td class="staff__list-detail">{{$user->email}}</td>
+            <td class="staff__list-detail">
+                <a href="/admin/attendance/staff/{{$user->id}}">詳細</a>
+            </td>
         </tr>
+        @endforeach
     </table>
 </main>
 @endsection

@@ -51,33 +51,29 @@ class Attendance extends Model
             return 0;
         }
 
-        $in  = $this->clock_in->copy();
-        $out = $this->clock_out->copy();
+        $seconds = $this->clock_out->diffInSeconds($this->clock_in);
 
-        // 日跨ぎ対応
-        if ($out->lt($in)) {
-            $out->addDay();
-        }
-
-        return $in->diffInMinutes($out);
+        return (int) ceil($seconds / 60);
     }
 
     public function breakMinutes(): int
     {
-        return $this->breaks->sum(function ($b) {
-            if (!$b->break_in || !$b->break_out) {
-                return 0;
-            }
+        return $this->breaks()
+            ->whereNotNull('break_in')
+            ->whereNotNull('break_out')
+            ->get()
+            ->sum(function ($b) {
+                $in  = $b->break_in->copy();
+                $out = $b->break_out->copy();
 
-            $in  = $b->break_in->copy();
-            $out = $b->break_out->copy();
+                if ($out->lt($in)) {
+                    $out->addDay();
+                }
 
-            if ($out->lt($in)) {
-                $out->addDay();
-            }
+                $seconds = $out->diffInSeconds($in);
 
-            return $in->diffInMinutes($out);
-        });
+                return (int) ceil($seconds / 60);
+            });
     }
 
     public function breakTime(): string
@@ -85,13 +81,28 @@ class Attendance extends Model
         return $this->formatMinutes($this->breakMinutes());
     }
 
+    public function totalMinutes(): int
+    {
+        return $this->workMinutes();
+    }
+
     public function totalTime(): string
     {
-        return $this->formatMinutes($this->workMinutes());
+        $minutes = $this->totalMinutes();
+
+        $hours = intdiv($minutes, 60);
+        $mins  = $minutes % 60;
+
+        return sprintf('%02d:%02d', $hours, $mins);
     }
 
     public function attendanceCorrections()
     {
         return $this->hasMany(AttendanceCorrection::class);
+    }
+
+    public function latestCorrection()
+    {
+        return $this->hasOne(AttendanceCorrection::class)->latest();
     }
 }

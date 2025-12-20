@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css" />
     <link rel="stylesheet" href="{{asset('css/common.css')}}">
+    <link rel="stylesheet" href="{{asset('css/components.css')}}">
     @yield('css')
 </head>
 
@@ -35,13 +36,13 @@
                     @endif
                     @if(Auth::user()->role === 'admin')
                     <li class="header__nav-item">
-                        <a href="" class="header__nav-link">勤怠一覧</a>
+                        <a href="/admin/attendance/list" class="header__nav-link">勤怠一覧</a>
                     </li>
                     <li class="header__nav-item">
-                        <a href="" class="header__nav-link">スタッフ一覧</a>
+                        <a href="/admin/staff/list" class="header__nav-link">スタッフ一覧</a>
                     </li>
                     <li class="header__nav-item">
-                        <a href="" class="header__nav-link">申請一覧</a>
+                        <a href="/stamp_correction_request/list" class="header__nav-link">申請一覧</a>
                     </li>
                     @endif
                     <li class="header__nav-item">

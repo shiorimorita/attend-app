@@ -16,7 +16,7 @@ use Laravel\Fortify\Contracts\LoginViewResponse;
 use Laravel\Fortify\Contracts\LogoutResponse;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
-use Laravel\Fortify\Http\Requests\LoginRequest;
+use App\Http\Requests\LoginRequest;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -57,6 +57,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
+        
         return $this->loginPipeline($request)->then(function ($request) {
             return app(LoginResponse::class);
         });

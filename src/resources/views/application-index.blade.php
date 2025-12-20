@@ -26,7 +26,7 @@
             <td class="application__table-detail">{{$correction->description}}</td>
             <td class="application__table-detail">{{$correction->created_at->format('Y/m/d')}}</td>
             <td class="application__table-detail">
-                <a href="/attendance/detail/{{$correction->attendance->id}}" class="attendances__list-detail-link-text">詳細</a>
+                <a href="{{route('stamp_correction_request.approve', ['attendance_correct_request_id' => $correction->id])}}" class="attendances__list-detail-link-text">詳細</a>
             </td>
         </tr>
         @endforeach
