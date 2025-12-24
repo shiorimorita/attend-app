@@ -141,3 +141,9 @@ body {
 .attendance__input-error {
     grid-column: 2;
 }
+
+.attendance__button--disabled {
+    background-color: #696969;
+    color: #fff;
+    font-weight: bold;
+}

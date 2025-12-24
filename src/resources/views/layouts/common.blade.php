@@ -16,9 +16,15 @@
     <header class="header">
         <div class="header__inner">
             <h1 class="header__logo">
+                @if(Auth::check() && Auth::user()->role === 'admin')
+                <a href="http://localhost/admin/attendance/list" class="header__logo-link">
+                    <img src="{{asset('images/header.png')}}" alt="" class="header__logo-img">
+                </a>
+                @else
                 <a href="/attendance" class="header__logo-link">
                     <img src="{{asset('images/header.png')}}" alt="" class="header__logo-img">
                 </a>
+                @endif
             </h1>
             @auth
             <nav class="header__nav">

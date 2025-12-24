@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\AttendanceCorrectionRequest;
 use Illuminate\Support\Carbon as SupportCarbon;
 
 class AttendanceController extends Controller
@@ -117,12 +118,11 @@ class AttendanceController extends Controller
             ->sortByDesc('created_at')
             ->first(); // null or Model
 
-        $approvedCorrection = $attendance->attendanceCorrections
-            ->where('status', 'approved')
-            ->sortByDesc('created_at')
-            ->first(); // null or Model
+        // 承認済みの修正は既に attendance と breaks に反映されているため、
+        // $correction としては渡さない（pending のみ）
+        $correction = $pendingCorrection;
 
-        $correction = $pendingCorrection ?? $approvedCorrection;
+        $isAdminDirectEdit = request()->is('admin/attendance/detail/*');
 
         return view('attendance-check', [
             'attendance' => $attendance,
@@ -138,7 +138,7 @@ class AttendanceController extends Controller
         return view('staff-index', compact('attendances', 'date'));
     }
 
-    public function store(Request $request, $id)
+    public function store(AttendanceCorrectionRequest $request, $id)
     {
         $attendance = Attendance::with('breaks')->findOrFail($id);
 
@@ -151,13 +151,11 @@ class AttendanceController extends Controller
 
             foreach ($request->input('breaks', []) as $breakId => $b) {
 
-                $breakIn = !empty($b['break_in']) ? $b['break_in'] : null;
-                $breakOut = !empty($b['break_out']) ? $b['break_out'] : null;
+                $breakIn = $b['break_in'] ?? null;
+                $breakOut = $b['break_out'] ?? null;
 
-                if (is_null($breakIn) && is_null($breakOut)) {
-                    AttendanceBreak::where('id', $breakId)
-                        ->where('attendance_id', $attendance->id)
-                        ->delete();
+                if (blank($breakIn) && blank($breakOut)) {
+                    $attendance->breaks()->where('id', $breakId)->delete();
                     continue;
                 }
 

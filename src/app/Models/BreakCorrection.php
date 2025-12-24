@@ -15,6 +15,7 @@ class BreakCorrection extends Model
         'attendance_break_id',
         'break_in',
         'break_out',
+        'is_deleted',
     ];
 
     public function attendanceBreak()

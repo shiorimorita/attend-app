@@ -17,8 +17,9 @@ class CreateBreakCorrectionsTable extends Migration
             $table->id();
             $table->foreignId('attendance_correction_id')->constrained()->cascadeOnDelete();
             $table->foreignId('attendance_break_id')->nullable()->constrained()->nullOnDelete();
-            $table->time('break_in');
-            $table->time('break_out');
+            $table->time('break_in')->nullable();
+            $table->time('break_out')->nullable();
+            $table->boolean('is_deleted')->default(false);
             $table->timestamps();
         });
     }

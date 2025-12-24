@@ -63,22 +63,33 @@
             $breakCorrection = $correction && $correction->breakCorrections
             ? $correction->breakCorrections->firstWhere('attendance_break_id', $break->id)
             : null;
+            $isDeleted = $breakCorrection && $breakCorrection->is_deleted;
             @endphp
             <div class="attendance__form-group attendance__form-group--input">
                 <label for="break-in-{{$break->id}}" class="attendance__form-label attendance__form-label--input attendance__form-label-break">休憩{{$index + 1}}</label>
                 <div class="attendance__form-value">
                     <input type="text" name="breaks[{{$break->id}}][break_in]" class="attendance__input-time attendance__break-in" value="{{ old(
                         'breaks.'.$break->id.'.break_in',
-                        $breakCorrection
-                            ? \Carbon\Carbon::parse($breakCorrection->break_in)->format('H:i')
-                            : ($break->break_in ? \Carbon\Carbon::parse($break->break_in)->format('H:i') : '')
+                        $isDeleted
+                            ? ''
+                            : ($breakCorrection && $breakCorrection->break_in
+                                ? \Carbon\Carbon::parse($breakCorrection->break_in)->format('H:i')
+                                : ($break->break_in
+                                    ? \Carbon\Carbon::parse($break->break_in)->format('H:i')
+                                    : '')
+                            )
                     ) }}" id="break-in-{{ $break->id }}">
                     <span class="attendance__input-separator">～</span>
                     <input type="text" name="breaks[{{ $break->id }}][break_out]" class="attendance__input-time attendance__break-out" value="{{ old(
                         'breaks.'.$break->id.'.break_out',
-                        $breakCorrection
-                            ? \Carbon\Carbon::parse($breakCorrection->break_out)->format('H:i')
-                            : ($break->break_out ? \Carbon\Carbon::parse($break->break_out)->format('H:i') : '')
+                        $isDeleted
+                            ? ''
+                            : ($breakCorrection && $breakCorrection->break_out
+                                ? \Carbon\Carbon::parse($breakCorrection->break_out)->format('H:i')
+                                : ($break->break_out
+                                    ? \Carbon\Carbon::parse($break->break_out)->format('H:i')
+                                    : '')
+                            )
                     ) }}">
                 </div>
                 <p class="attendance__input-error input-error">
@@ -128,23 +139,23 @@
                 </span>
             </div>
         </div>
-        @if ($mode === 'admin')
-        {{-- 管理者は常に修正可 --}}
-        <button type="submit" class="attendance__form-submit common-btn">修正</button>
-        @else
         @php
-        $hasPending = $attendance->attendanceCorrections()
-        ->where('status', 'pending')
-        ->exists();
-        $hasApproved = $attendance->attendanceCorrections()
-        ->where('status', 'approved')
-        ->exists();
+        $user = auth()->user();
         @endphp
-        @if ($hasPending)
+        {{-- staff --}}
+        @if (! $user->isAdmin())
+        @if ($correction && $correction->status === 'pending')
         <p class="attendance__notice">
             *承認待ちのため修正はできません。
         </p>
-        @elseif ($hasApproved)
+        @else
+        <button type="submit" class="attendance__form-submit common-btn">
+            修正
+        </button>
+        @endif
+        {{-- admin --}}
+        @else
+        @if($correction && $correction->status === 'approved')
         <button type="button" disabled class="attendance__form-submit attendance__button--disabled">
             承認済み
         </button>

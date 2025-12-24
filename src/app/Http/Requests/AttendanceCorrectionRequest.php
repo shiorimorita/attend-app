@@ -27,7 +27,7 @@ class AttendanceCorrectionRequest extends FormRequest
         return [
             'clock_in'  => ['required', 'date_format:H:i'],
             'clock_out' => ['required', 'date_format:H:i', 'after:clock_in'],
-            'breaks.*.break_in'  => ['nullable', 'date_format:H:i', 'after:clock_in'],
+            'breaks.*.break_in'  => ['nullable', 'date_format:H:i', 'before:clock_out', 'after:clock_in'],
             'breaks.*.break_out' => ['nullable', 'date_format:H:i', 'before:clock_out'],
             'description' => ['required'],
         ];
@@ -47,7 +47,8 @@ class AttendanceCorrectionRequest extends FormRequest
             'clock_out.date_format' => '退勤時間の形式が正しくありません',
             'clock_out.after' => '出勤時間もしくは退勤時間が不適切な値です',
             'breaks.*.break_in.date_format' => '休憩開始時間の形式が正しくありません',
-            'breaks.*.break_in.after' => '休憩時間が不適切な値です',
+            'breaks.*.break_in.before' => '休憩時間が不適切な値です',
+            'breaks.*.break_in.after' => '休憩時間もしくは退勤時間が不適切な値です',
             'breaks.*.break_out.date_format' => '休憩終了時間の形式が正しくありません',
             'breaks.*.break_out.before' => '休憩時間もしくは退勤時間が不適切な値です',
             'description.required' => '備考を記入してください',

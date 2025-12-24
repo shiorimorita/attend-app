@@ -14,6 +14,7 @@ use App\Http\Responses\LoginResponse;
 use App\Http\Responses\RegisterResponse;
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use App\Http\Requests\LoginRequest;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -31,7 +32,18 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // カスタムバリデーションメッセージの設定
         Fortify::authenticateUsing(function (Request $request) {
+            // バリデーション
+            $request->validate([
+                'email' => ['required', 'email'],
+                'password' => ['required'],
+            ], [
+                'email.required' => 'メールアドレスを入力してください',
+                'email.email' => 'メールアドレスの形式が正しくありません',
+                'password.required' => 'パスワードを入力してください',
+            ]);
+
             $user = Auth::getProvider()->retrieveByCredentials(
                 $request->only('email')
             );

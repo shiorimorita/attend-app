@@ -26,7 +26,11 @@
             <td class="application__table-detail">{{$correction->description}}</td>
             <td class="application__table-detail">{{$correction->created_at->format('Y/m/d')}}</td>
             <td class="application__table-detail">
+                @if(Auth::user()->isAdmin())
                 <a href="{{route('stamp_correction_request.approve', ['attendance_correct_request_id' => $correction->id])}}" class="attendances__list-detail-link-text">詳細</a>
+                @else
+                <a href="{{route('attendance.detail',['id' =>$correction->attendance->id])}}" class="attendances__list-detail-link-text">詳細</a>
+                @endif
             </td>
         </tr>
         @endforeach

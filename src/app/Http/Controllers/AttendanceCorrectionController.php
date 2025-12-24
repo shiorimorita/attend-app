@@ -16,28 +16,43 @@ class AttendanceCorrectionController extends Controller
     {
         $attendance = Attendance::findOrFail($id);
 
-        DB::transaction(function () use ($request, $attendance) {
+        DB::transaction(
+            function () use ($request, $attendance) {
 
-            $correction = AttendanceCorrection::create([
-                'attendance_id' => $attendance->id,
-                'user_id' => Auth::id(),
-                'clock_in' => $request->clock_in,
-                'clock_out' => $request->clock_out,
-                'description' => $request->description,
-            ]);
+                $correction = AttendanceCorrection::create([
+                    'attendance_id' => $attendance->id,
+                    'user_id' => Auth::id(),
+                    'clock_in' => $request->clock_in,
+                    'clock_out' => $request->clock_out,
+                    'description' => $request->description,
+                ]);
 
-            foreach ($request->input('breaks', []) as $breakId => $b) {
-                if ($b['break_in'] || $b['break_out']) {
+                foreach ($request->input('breaks', []) as $breakId => $b) {
+
+                    $in = $b['break_in'] ?? null;
+                    $out = $b['break_out'] ?? null;
+
+                    if (blank($in) && blank($out)) {
+                        BreakCorrection::create([
+                            'attendance_correction_id' => $correction->id,
+                            'attendance_break_id' => $breakId,
+                            'break_in' => null,
+                            'break_out' => null,
+                            'is_deleted' => true,
+                        ]);
+                        continue;
+                    }
+
                     BreakCorrection::create([
                         'attendance_correction_id' => $correction->id,
                         'attendance_break_id' => $breakId,
                         'break_in' => $b['break_in'],
                         'break_out' => $b['break_out'],
+                        'is_deleted' => false,
                     ]);
                 }
-            }
 
-            if ($nb = $request->input('new_break')) { {
+                if ($nb = $request->input('new_break')) {
                     if (
                         !empty($nb['break_in']) &&
                         !empty($nb['break_out'])
@@ -47,10 +62,11 @@ class AttendanceCorrectionController extends Controller
                             'attendance_break_id' => null,
                             'break_in' => $nb['break_in'],
                             'break_out' => $nb['break_out'],
+                            'is_deleted' => false,
                         ]);
                 }
             }
-        });
+        );
 
         return back();
     }
@@ -85,7 +101,7 @@ class AttendanceCorrectionController extends Controller
         ]);
     }
 
-    public function approve(Request $request, $attendance_correct_request_id)
+    public function approve(AttendanceCorrectionRequest $request, $attendance_correct_request_id)
     {
         $correction = AttendanceCorrection::with(['attendance.breaks', 'breakCorrections'])->findOrFail($attendance_correct_request_id);
 
@@ -106,16 +122,26 @@ class AttendanceCorrectionController extends Controller
                 'clock_out' => $request->input('clock_out'),
             ]);
 
+            $submittedBreakIds = [];
+
             foreach ($request->input('breaks', []) as $breakId => $b) {
-                if ($b['break_in'] || $b['break_out']) {
-                    $attendance->breaks()
-                        ->where('id', $breakId)
-                        ->update([
-                            'break_in'  => $b['break_in'],
-                            'break_out' => $b['break_out'],
-                        ]);
+
+                $breakIn = $b['break_in'] ?? null;
+                $breakOut = $b['break_out'] ?? null;
+
+                if (blank($breakIn) && blank($breakOut)) {
+                    continue;
                 }
+
+                $submittedBreakIds[] = $breakId;
+
+                $attendance->breaks()->where('id', $breakId)->update([
+                    'break_in'  => $breakIn,
+                    'break_out' => $breakOut,
+                ]);
             }
+
+            $attendance->breaks()->whereNotIn('id', $submittedBreakIds)->delete();
 
             if ($nb = $request->input('new_break')) {
                 if (!empty($nb['break_in']) && !empty($nb['break_out'])) {

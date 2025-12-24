@@ -18,17 +18,17 @@ class AttendanceBreakController extends Controller
             return back()->withErrors('本日の出勤はありません');
         }
 
-        $attendance->breaks()->create([
-            'break_in' => now()->format('H:i:s'),
-        ]);
-
         $isOnBreak = $attendance->breaks()->whereNull('break_out')->exists();
 
         if ($isOnBreak) {
             return back()->withErrors('すでに休憩中です');
         }
 
-        return back();
+        $attendance->breaks()->create([
+            'break_in' => now()->format('H:i:s'),
+        ]);
+
+        return redirect('/attendance');
     }
 
     public function breakOut()
@@ -45,6 +45,6 @@ class AttendanceBreakController extends Controller
             return back()->withErrors('休憩中ではありません');
         }
 
-        return back();
+        return redirect('/attendance');
     }
 }
