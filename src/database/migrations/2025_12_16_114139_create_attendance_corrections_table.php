@@ -21,6 +21,7 @@ class CreateAttendanceCorrectionsTable extends Migration
             $table->time('clock_in');
             $table->time('clock_out');
             $table->text('description');
+            $table->string('request_type')->default('staff_request')->index();
             $table->string('status')->default('pending')->index();
             $table->timestamps();
         });

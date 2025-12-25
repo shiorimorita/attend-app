@@ -19,8 +19,11 @@
             <th class="application__table-header">詳細</th>
         </tr>
         @foreach($corrections as $correction)
+        @if($correction->request_type === 'admin_edit')
+        @continue
+        @endif
         <tr class="application__table-row">
-            <td class="application__table-detail">{{($correction->status)==='pending' ? '承認待ち' : ($correction->status === 'approved' ? '承認済み' : '')}}</td>
+            <td class="application__table-detail">{{($correction->status)==='pending' ? '承認待ち' : (($correction->status === 'approved' && $correction->request_type === 'staff_request') ? '承認済み' : '')}}</td>
             <td class="application__table-detail">{{$correction->user->name}}</td>
             <td class="application__table-detail">{{$correction->attendance->date->format('Y/m/d') }}</td>
             <td class="application__table-detail">{{$correction->description}}</td>

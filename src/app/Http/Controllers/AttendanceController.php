@@ -116,18 +116,83 @@ class AttendanceController extends Controller
         $pendingCorrection = $attendance->attendanceCorrections
             ->where('status', 'pending')
             ->sortByDesc('created_at')
-            ->first(); // null or Model
+            ->first();
 
-        // 承認済みの修正は既に attendance と breaks に反映されているため、
-        // $correction としては渡さない（pending のみ）
         $correction = $pendingCorrection;
 
+        $user = Auth::user();
         $isAdminDirectEdit = request()->is('admin/attendance/detail/*');
+
+        $clockIn  = $correction && $correction->clock_in
+            ? (new \Carbon\Carbon($correction->clock_in))->format('H:i')
+            : ($attendance->clock_in ? $attendance->clock_in->format('H:i') : '');
+        $clockOut = $correction && $correction->clock_out
+            ? (new \Carbon\Carbon($correction->clock_out))->format('H:i')
+            : ($attendance->clock_out ? $attendance->clock_out->format('H:i') : '');
+
+
+        $breakCorrectionMap = $correction
+            ? $correction->breakCorrections->keyBy('attendance_break_id')
+            : collect();
+
+        $breaks = $attendance->breaks->map(function ($break) use ($breakCorrectionMap) {
+            $bc = $breakCorrectionMap->get($break->id);
+
+            if ($bc && $bc->is_deleted) {
+                return null;
+            }
+
+            $breakIn = ($bc && $bc->break_in)
+                ? (new \Carbon\Carbon($bc->break_in))->format('H:i')
+                : ($break->break_in ? $break->break_in->format('H:i') : '');
+
+            $breakOut = ($bc && $bc->break_out)
+                ? (new \Carbon\Carbon($bc->break_out))->format('H:i')
+                : ($break->break_out ? $break->break_out->format('H:i') : '');
+
+            return [
+                'id' => $break->id,
+                'break_in' => $breakIn,
+                'break_out' => $breakOut,
+            ];
+        })->filter();
+
+        $newBreak = [
+            'break_in'  => '',
+            'break_out' => '',
+        ];
+
+        if ($correction) {
+            $newBreakCorrection = $correction->breakCorrections->where('attendance_break_id', null)->first();
+            if ($newBreakCorrection) {
+                $newBreak = [
+                    'break_in'  => $newBreakCorrection->break_in ? (new \Carbon\Carbon($newBreakCorrection->break_in))->format('H:i') : '',
+                    'break_out' => $newBreakCorrection->break_out ? (new \Carbon\Carbon($newBreakCorrection->break_out))->format('H:i') : '',
+                ];
+            }
+        }
+
+        $readonly = $user->isAdmin()
+            ? false
+            : (bool) $pendingCorrection;
+
+        $actionUrl = null;
+        if (! $readonly) {
+            $actionUrl = $isAdminDirectEdit
+                ? url('/admin/attendance/detail/' . $attendance->id)
+                : route('attendance.correction.request', ['id' => $attendance->id]);
+        }
 
         return view('attendance-check', [
             'attendance' => $attendance,
             'correction' => $correction,
+            'readonly' => $readonly,
             'mode' => Auth::user()->isAdmin() ? 'admin' : 'user',
+            'clockIn' => $clockIn,
+            'clockOut' => $clockOut,
+            'breaks' => $breaks,
+            'newBreak' => $newBreak,
+            'actionUrl' => $actionUrl,
         ]);
     }
 
@@ -143,6 +208,26 @@ class AttendanceController extends Controller
         $attendance = Attendance::with('breaks')->findOrFail($id);
 
         DB::transaction(function () use ($request, $attendance) {
+
+            $correction = $attendance->attendanceCorrections()->create([
+                'user_id' => $attendance->user_id,
+                'clock_in' => $attendance->clock_in,
+                'clock_out' => $attendance->clock_out,
+                'status' => 'approved', // 管理者による直接編集
+                'approved_by' => Auth::id(),
+                'approved_at' => now(),
+                'request_type' => 'admin_edit',
+                'description' => $request->input('description'),
+            ]);
+
+            foreach ($attendance->breaks as $break) {
+                $correction->breakCorrections()->create([
+                    'attendance_break_id' => $break->id,
+                    'break_in' => $break->break_in,
+                    'break_out' => $break->break_out,
+                    'is_deleted' => false,
+                ]);
+            }
 
             $attendance->update([
                 'clock_in' => $request->clock_in,
@@ -175,6 +260,6 @@ class AttendanceController extends Controller
             }
         });
 
-        return back();
+        return redirect('admin/attendance/list');
     }
 }

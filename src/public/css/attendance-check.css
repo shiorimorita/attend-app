@@ -147,3 +147,9 @@ body {
     color: #fff;
     font-weight: bold;
 }
+
+.attendance__input-time--readonly,
+.attendance__remark-textarea--readonly {
+    border: none;
+    pointer-events: none;
+}

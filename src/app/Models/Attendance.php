@@ -105,4 +105,18 @@ class Attendance extends Model
     {
         return $this->hasOne(AttendanceCorrection::class)->latest();
     }
+
+    public function isPendingCorrection(): bool
+    {
+        return $this->attendanceCorrections()
+            ->where('status', 'pending')
+            ->exists();
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->attendanceCorrections()
+            ->where('status', 'approved')
+            ->exists();
+    }
 }

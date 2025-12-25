@@ -18,6 +18,7 @@ class AttendanceCorrection extends Model
         'clock_out',
         'description',
         'status',
+        'request_type',
     ];
 
     public function user()

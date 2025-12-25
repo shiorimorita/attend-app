@@ -5,7 +5,7 @@
 @section('content')
 <main class="attendance__detail">
     <h2 class="attendance__detail-title common-table-title">勤怠詳細</h2>
-    <form action="{{ $actionUrl ?? ''}}" class="attendance__form" method="post">
+    <form action="{{ $actionUrl }}" class="attendance__form" method="post">
         @csrf
         <div class="attendance__form-inner">
             <div class="attendance__form-group attendance__form-group--display">
@@ -24,9 +24,9 @@
             <div class="attendance__form-group attendance__form-group--input">
                 <label for="clock-in" class="attendance__form-label attendance__form-label--input">出勤・退勤</label>
                 <div class="attendance__form-value">
-                    <input type="text" name="clock_in" class="attendance__input-time attendance__input-in @if($readonly) attendance__input-time--readonly @endif" value="{{ $clockIn }}" @if($readonly) readonly @endif>
+                    <input type="text" name="clock_in" class="attendance__input-time attendance__input-in" value="{{ $clockIn }}">
                     <span class="attendance__input-separator">～</span>
-                    <input type="text" name="clock_out" class="attendance__input-time attendance__input-out @if($readonly) attendance__input-time--readonly @endif" value="{{ $clockOut }}" @if($readonly) readonly @endif>
+                    <input type="text" name="clock_out" class="attendance__input-time attendance__input-out" value="{{ $clockOut }}">
                 </div>
                 <p class="attendance__input-error input-error">
                     @error('clock_in')
@@ -37,38 +37,38 @@
                     @enderror
                 </p>
             </div>
-            @foreach($breaks as $index => $break)
+            @foreach($attendance->breaks as $index => $break)
             <div class="attendance__form-group attendance__form-group--input">
-                <label for="break-in-{{$break['id']}}" class="attendance__form-label attendance__form-label--input attendance__form-label-break">休憩{{$index + 1}}</label>
+                <label for="break-in-{{$break->id}}" class="attendance__form-label attendance__form-label--input attendance__form-label-break">休憩{{$index + 1}}</label>
                 <div class="attendance__form-value">
-                    <input type="text" name="breaks[{{ $break['id'] }}][break_in]" class="attendance__input-time attendance__break-in @if($readonly) attendance__input-time--readonly @endif" value="{{ $break['break_in'] }}" id="break-in-{{ $break['id'] }}" @if($readonly) readonly @endif>
+                    <input type="time" name="breaks[{{ $break['id'] }}][break_in]" class="attendance__input-time attendance__break-in" value="{{ $break['break_in'] }}" {{ $mode==='admin' ? '' : 'readonly' }} id="break-in-{{ $break['id'] }}">
                     <span class="attendance__input-separator">～</span>
-                    <input type="text" name="breaks[{{ $break['id'] }}][break_out]" class="attendance__input-time attendance__break-out @if($readonly) attendance__input-time--readonly @endif" value="{{ $break['break_out'] }}" @if($readonly) readonly @endif>
+                    <input type="time" name="breaks[{{ $break['id'] }}][break_out]" class="attendance__input-time attendance__break-out" value="{{ $break['break_out'] }}" {{ $mode==='admin' ? '' : 'readonly' }} id="break-out-{{ $break['id'] }}">
                 </div>
                 <p class="attendance__input-error input-error">
-                    @error('breaks.' . $break['id'] . '.break_in')
+                    @error('breaks.' . $break->id . '.break_in')
                     {{ $message }}
                     @enderror
                 </p>
                 <p class="attendance__input-error input-error">
-                    @error('breaks.' . $break['id'] . '.break_out')
+                    @error('breaks.' . $break->id . '.break_out')
                     {{ $message }}
                     @enderror
                 </p>
             </div>
             @endforeach
             <div class="attendance__form-group attendance__form-group--input">
-                <label for="new_break-in" class="attendance__form-label attendance__form-label--input">休憩{{ count($breaks) + 1 }}</label>
+                <label for="new_break-in" class="attendance__form-label attendance__form-label--input">休憩{{ $attendance->breaks->count() + 1 }}</label>
                 <div class="attendance__form-value">
-                    <input type="text" name="new_break[break_in]" class="attendance__input-time attendance__break-in @if($readonly) attendance__input-time--readonly @endif" value="{{ $newBreak['break_in'] }}" id="new_break-in" @if($readonly) readonly @endif>
+                    <input type="text" name="new_break[break_in]" class="attendance__input-time attendance__break-in" value="{{ $newBreak['break_in'] }}" id="new_break-in">
                     <span class="attendance__input-separator">～</span>
-                    <input type="text" name="new_break[break_out]" class="attendance__input-time attendance__break-out @if($readonly) attendance__input-time--readonly @endif" value="{{ $newBreak['break_out'] }}" @if($readonly) readonly @endif>
+                    <input type="text" name="new_break[break_out]" class="attendance__input-time attendance__break-out" value="{{ $newBreak['break_out'] }}">
                 </div>
             </div>
             <div class="attendance__form-group attendance__form-group--input">
                 <label for="description" class="attendance__form-label attendance__form-label--input">備考</label>
                 <div class="attendance__form-value">
-                    <textarea class="attendance__remark-textarea @if($readonly) attendance__remark-textarea--readonly @endif" name="description" id="description" @if($readonly) readonly @endif>{{ old('description', optional($correction)->description) }}</textarea>
+                    <textarea class="attendance__remark-textarea" name="description" id="description">{{ old('description', optional($correction)->description) }}</textarea>
                 </div>
                 <span class="attendance__input-error input-error">
                     @error('description')
