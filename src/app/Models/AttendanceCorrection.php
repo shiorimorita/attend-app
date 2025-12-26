@@ -31,11 +31,6 @@ class AttendanceCorrection extends Model
         return $this->belongsTo(Attendance::class);
     }
 
-    public function approver()
-    {
-        return $this->belongsTo(User::class, 'approved_by');
-    }
-
     public function breakCorrections()
     {
         return $this->hasMany(BreakCorrection::class);

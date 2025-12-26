@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Attendance extends Model
 {
@@ -108,9 +107,7 @@ class Attendance extends Model
 
     public function isPendingCorrection(): bool
     {
-        return $this->attendanceCorrections()
-            ->where('status', 'pending')
-            ->exists();
+        return $this->attendanceCorrections()->where('status', 'pending')->exists();
     }
 
     public function isApproved(): bool

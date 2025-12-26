@@ -9,9 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\AttendanceCorrectionRequest;
+use App\Http\Controllers\Concerns\FormatsAttendanceTime;
 
 class AttendanceCorrectionController extends Controller
 {
+    use FormatsAttendanceTime;
+
     public function store(AttendanceCorrectionRequest $request, $id)
     {
         $attendance = Attendance::findOrFail($id);
@@ -48,7 +51,6 @@ class AttendanceCorrectionController extends Controller
                         'attendance_break_id' => $breakId,
                         'break_in' => $b['break_in'],
                         'break_out' => $b['break_out'],
-                        'is_deleted' => false,
                     ]);
                 }
 
@@ -62,7 +64,6 @@ class AttendanceCorrectionController extends Controller
                             'attendance_break_id' => null,
                             'break_in' => $nb['break_in'],
                             'break_out' => $nb['break_out'],
-                            'is_deleted' => false,
                         ]);
                 }
             }
@@ -94,67 +95,43 @@ class AttendanceCorrectionController extends Controller
             'breakCorrections',
         ])->findOrFail($attendance_correct_request_id);
 
-        $clockIn  = $correction->clock_in ? (new \Carbon\Carbon($correction->clock_in))->format('H:i') : ($correction->attendance->clock_in ? $correction->attendance->clock_in->format('H:i') : '');
-        $clockOut = $correction->clock_out ? (new \Carbon\Carbon($correction->clock_out))->format('H:i') : ($correction->attendance->clock_out ? $correction->attendance->clock_out->format('H:i') : '');
-        $newBreak = [
-            'break_in'  => '',
-            'break_out' => '',
-        ];
-
         $attendance = $correction->attendance;
 
+        $clockIn = $this->pickHi($correction->clock_in, $correction->attendance->clock_in);
+        $clockOut = $this->pickHi($correction->clock_out, $correction->attendance->clock_out);
+
+        $breakCorrectionMap = $correction->breakCorrections->keyBy('attendance_break_id');
 
         $actionUrl = url('/stamp_correction_request/approve/' . $attendance_correct_request_id);
 
         $readonly = true;
+        $mode = 'admin';
 
-        $breakCorrectionMap = $correction->breakCorrections->keyBy('attendance_break_id');
+        $breaks = $attendance->breaks->map(function ($break) use ($breakCorrectionMap) {
+            $bc = $breakCorrectionMap->get($break->id);
 
-        $breaks = $attendance->breaks->map(
-            function ($break) use ($breakCorrectionMap) {
-                $bc = $breakCorrectionMap->get($break->id);
-
-                // 削除フラグが立っている場合はスキップ
-                if ($bc && $bc->is_deleted) {
-                    return null;
-                }
-
-                $breakIn = ($bc && $bc->break_in)
-                    ? (new \Carbon\Carbon($bc->break_in))->format('H:i')
-                    : ($break->break_in ? $break->break_in->format('H:i') : '');
-
-                $breakOut = ($bc && $bc->break_out)
-                    ? (new \Carbon\Carbon($bc->break_out))->format('H:i')
-                    : ($break->break_out ? $break->break_out->format('H:i') : '');
-
-                return [
-                    'id' => $break->id,
-                    'break_in' => $breakIn,
-                    'break_out' => $breakOut,
-                ];
+            if ($bc?->is_deleted) {
+                return null;
             }
-        )->filter();
 
-        // 新規追加の休憩時間を取得
+            return [
+                'id'        => $break->id,
+                'break_in'  => $this->pickHi($bc?->break_in,  $break->break_in),
+                'break_out' => $this->pickHi($bc?->break_out, $break->break_out),
+            ];
+        })->filter()->values();
+
+        $newBreak = ['break_in' => '', 'break_out' => ''];
+
         $newBreakCorrection = $correction->breakCorrections->where('attendance_break_id', null)->first();
         if ($newBreakCorrection) {
             $newBreak = [
-                'break_in'  => $newBreakCorrection->break_in ? (new \Carbon\Carbon($newBreakCorrection->break_in))->format('H:i') : '',
-                'break_out' => $newBreakCorrection->break_out ? (new \Carbon\Carbon($newBreakCorrection->break_out))->format('H:i') : '',
+                'break_in'  => $this->formatHi($newBreakCorrection->break_in),
+                'break_out' => $this->formatHi($newBreakCorrection->break_out),
             ];
         }
 
-        return view('attendance-check', [
-            'attendance' => $correction->attendance,
-            'correction' => $correction,
-            'readonly' => $readonly,
-            'mode' => 'admin',
-            'clockIn' => $clockIn,
-            'clockOut' => $clockOut,
-            'newBreak' => $newBreak,
-            'actionUrl' => $actionUrl,
-            'breaks' => $breaks,
-        ]);
+        return view('attendance-check', compact('attendance', 'correction', 'readonly', 'mode', 'clockIn', 'clockOut', 'breaks', 'newBreak', 'actionUrl'));
     }
 
     public function approve(Request $request, $attendance_correct_request_id)

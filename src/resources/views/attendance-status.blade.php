@@ -50,7 +50,6 @@
 @section('js')
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        // リアルタイム時計
         function updateClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, "0");
@@ -74,3 +73,4 @@
         document.getElementById("break-out-btn")?.addEventListener("click", () => setNow("break-out-time"));
     });
 </script>
+@endsection

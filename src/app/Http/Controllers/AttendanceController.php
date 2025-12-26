@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
-use App\Models\AttendanceBreak;
+use App\Http\Controllers\Concerns\FormatsAttendanceTime;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,10 +11,11 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\AttendanceCorrectionRequest;
-use Illuminate\Support\Carbon as SupportCarbon;
 
 class AttendanceController extends Controller
 {
+    use FormatsAttendanceTime;
+
     public function buildMonthlyAttendances(int $userId, ?string $monthParam): array
     {
         $month = $monthParam ? Carbon::createFromFormat('Y-m', $monthParam)->startOfMonth() : now()->startOfMonth();
@@ -108,28 +109,20 @@ class AttendanceController extends Controller
 
     public function edit($id)
     {
-        $attendance = Attendance::with([
-            'breaks',
-            'attendanceCorrections.breakCorrections',
-        ])->findOrFail($id);
-
-        $pendingCorrection = $attendance->attendanceCorrections
-            ->where('status', 'pending')
-            ->sortByDesc('created_at')
-            ->first();
-
-        $correction = $pendingCorrection;
-
         $user = Auth::user();
         $isAdminDirectEdit = request()->is('admin/attendance/detail/*');
 
-        $clockIn  = $correction && $correction->clock_in
-            ? (new \Carbon\Carbon($correction->clock_in))->format('H:i')
-            : ($attendance->clock_in ? $attendance->clock_in->format('H:i') : '');
-        $clockOut = $correction && $correction->clock_out
-            ? (new \Carbon\Carbon($correction->clock_out))->format('H:i')
-            : ($attendance->clock_out ? $attendance->clock_out->format('H:i') : '');
+        $attendance = Attendance::with([
+            'breaks',
+            'attendanceCorrections' => function ($q) {
+                $q->where('status', 'pending')->with('breakCorrections');
+            },
+        ])->findOrFail($id);
 
+        $correction = $attendance->attendanceCorrections->first();
+
+        $clockIn = $this->pickHi($correction?->clock_in, $attendance->clock_in);
+        $clockOut = $this->pickHi($correction?->clock_out, $attendance->clock_out);
 
         $breakCorrectionMap = $correction
             ? $correction->breakCorrections->keyBy('attendance_break_id')
@@ -138,43 +131,30 @@ class AttendanceController extends Controller
         $breaks = $attendance->breaks->map(function ($break) use ($breakCorrectionMap) {
             $bc = $breakCorrectionMap->get($break->id);
 
-            if ($bc && $bc->is_deleted) {
+            if ($bc?->is_deleted) {
                 return null;
             }
 
-            $breakIn = ($bc && $bc->break_in)
-                ? (new \Carbon\Carbon($bc->break_in))->format('H:i')
-                : ($break->break_in ? $break->break_in->format('H:i') : '');
-
-            $breakOut = ($bc && $bc->break_out)
-                ? (new \Carbon\Carbon($bc->break_out))->format('H:i')
-                : ($break->break_out ? $break->break_out->format('H:i') : '');
-
             return [
                 'id' => $break->id,
-                'break_in' => $breakIn,
-                'break_out' => $breakOut,
+                'break_in' => $this->pickHi($bc?->break_in, $break->break_in),
+                'break_out' => $this->pickHi($bc?->break_out, $break->break_out),
             ];
-        })->filter();
+        })->filter()->values();
 
-        $newBreak = [
-            'break_in'  => '',
-            'break_out' => '',
-        ];
+        $newBreak = ['break_in'  => '', 'break_out' => '',];
 
         if ($correction) {
             $newBreakCorrection = $correction->breakCorrections->where('attendance_break_id', null)->first();
             if ($newBreakCorrection) {
                 $newBreak = [
-                    'break_in'  => $newBreakCorrection->break_in ? (new \Carbon\Carbon($newBreakCorrection->break_in))->format('H:i') : '',
-                    'break_out' => $newBreakCorrection->break_out ? (new \Carbon\Carbon($newBreakCorrection->break_out))->format('H:i') : '',
+                    'break_in'  => $this->formatHi($newBreakCorrection->break_in),
+                    'break_out' => $this->formatHi($newBreakCorrection->break_out),
                 ];
             }
         }
 
-        $readonly = $user->isAdmin()
-            ? false
-            : (bool) $pendingCorrection;
+        $readonly = $user->isAdmin() ? false : (bool) $correction;
 
         $actionUrl = null;
         if (! $readonly) {
@@ -183,17 +163,9 @@ class AttendanceController extends Controller
                 : route('attendance.correction.request', ['id' => $attendance->id]);
         }
 
-        return view('attendance-check', [
-            'attendance' => $attendance,
-            'correction' => $correction,
-            'readonly' => $readonly,
-            'mode' => Auth::user()->isAdmin() ? 'admin' : 'user',
-            'clockIn' => $clockIn,
-            'clockOut' => $clockOut,
-            'breaks' => $breaks,
-            'newBreak' => $newBreak,
-            'actionUrl' => $actionUrl,
-        ]);
+        $mode = $user->isAdmin() ? 'admin' : 'user';
+
+        return view('attendance-check', compact('attendance', 'correction', 'readonly', 'mode', 'clockIn', 'clockOut', 'breaks', 'newBreak', 'actionUrl'));
     }
 
     public function todayAttendance(Request $request)
@@ -213,9 +185,8 @@ class AttendanceController extends Controller
                 'user_id' => $attendance->user_id,
                 'clock_in' => $attendance->clock_in,
                 'clock_out' => $attendance->clock_out,
-                'status' => 'approved', // 管理者による直接編集
+                'status' => 'approved',
                 'approved_by' => Auth::id(),
-                'approved_at' => now(),
                 'request_type' => 'admin_edit',
                 'description' => $request->input('description'),
             ]);
@@ -225,7 +196,6 @@ class AttendanceController extends Controller
                     'attendance_break_id' => $break->id,
                     'break_in' => $break->break_in,
                     'break_out' => $break->break_out,
-                    'is_deleted' => false,
                 ]);
             }
 
