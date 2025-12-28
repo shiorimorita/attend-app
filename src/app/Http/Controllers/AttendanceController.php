@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\AttendanceCorrectionRequest;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AttendanceController extends Controller
 {
@@ -231,5 +232,46 @@ class AttendanceController extends Controller
         });
 
         return redirect('admin/attendance/list');
+    }
+
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        abort_unless(Auth::user()->isAdmin(), 403);
+
+        $monthParam = $request->input('month');
+        $userId = $request->input('user_id');
+
+        abort_if(!$monthParam || !$userId, 400);
+
+        $user = User::findOrFail($userId);
+
+        $data = $this->buildMonthlyAttendances($user->id, $monthParam);
+        $days = $data['days'];
+        $month = $data['month'];
+
+        $fileName = sprintf('%s_%s_attendance.csv', $user->name, $month->format('Y_m'));
+
+        return response()->streamDownload(function () use ($days, $user) {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, ['日付', '出勤', '退勤', '休憩', '合計']);
+            foreach ($days as $day) {
+                $attendance = $day['attendance'];
+
+                fputcsv($out, [
+                    $day['date']->format('Y-m-d'),
+                    $attendance?->clock_in?->format('H:i') ?? '',
+                    $attendance?->clock_out?->format('H:i') ?? '',
+                    ($attendance && $attendance->breakTime() !== '0:00')
+                        ? $attendance->breakTime()
+                        : '',
+                    $attendance?->totalTime() ?? '',
+                ]);
+            }
+
+            fclose($out);
+        }, $fileName, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 }

@@ -24,9 +24,9 @@
             <div class="attendance__form-group attendance__form-group--input">
                 <label for="clock-in" class="attendance__form-label attendance__form-label--input">出勤・退勤</label>
                 <div class="attendance__form-value">
-                    <input type="text" name="clock_in" class="attendance__input-time attendance__input-in @if($readonly) attendance__input-time--readonly @endif" value="{{ $clockIn }}" @if($readonly) readonly @endif>
+                    <input type="text" name="clock_in" class="attendance__input-time attendance__input-in @if($readonly) attendance__input-time--readonly @endif" value="{{ old('clock_in', $clockIn) }}" @if($readonly) readonly @endif>
                     <span class="attendance__input-separator">～</span>
-                    <input type="text" name="clock_out" class="attendance__input-time attendance__input-out @if($readonly) attendance__input-time--readonly @endif" value="{{ $clockOut }}" @if($readonly) readonly @endif>
+                    <input type="text" name="clock_out" class="attendance__input-time attendance__input-out @if($readonly) attendance__input-time--readonly @endif" value="{{ old('clock_out', $clockOut) }}" @if($readonly) readonly @endif>
                 </div>
                 <p class="attendance__input-error input-error">
                     @error('clock_in')
@@ -41,9 +41,9 @@
             <div class="attendance__form-group attendance__form-group--input">
                 <label for="break-in-{{$break['id']}}" class="attendance__form-label attendance__form-label--input attendance__form-label-break">休憩{{$index + 1}}</label>
                 <div class="attendance__form-value">
-                    <input type="text" name="breaks[{{ $break['id'] }}][break_in]" class="attendance__input-time attendance__break-in @if($readonly) attendance__input-time--readonly @endif" value="{{ $break['break_in'] }}" id="break-in-{{ $break['id'] }}" @if($readonly) readonly @endif>
+                    <input type="text" name="breaks[{{ $break['id'] }}][break_in]" class="attendance__input-time attendance__break-in @if($readonly) attendance__input-time--readonly @endif" value="{{ old('breaks.' . $break['id'] . '.break_in', $break['break_in']) }}" id="break-in-{{ $break['id'] }}" @if($readonly) readonly @endif>
                     <span class="attendance__input-separator">～</span>
-                    <input type="text" name="breaks[{{ $break['id'] }}][break_out]" class="attendance__input-time attendance__break-out @if($readonly) attendance__input-time--readonly @endif" value="{{ $break['break_out'] }}" @if($readonly) readonly @endif>
+                    <input type="text" name="breaks[{{ $break['id'] }}][break_out]" class="attendance__input-time attendance__break-out @if($readonly) attendance__input-time--readonly @endif" value="{{ old('breaks.' . $break['id'] . '.break_out', $break['break_out']) }}" @if($readonly) readonly @endif>
                 </div>
                 <p class="attendance__input-error input-error">
                     @error('breaks.' . $break['id'] . '.break_in')
