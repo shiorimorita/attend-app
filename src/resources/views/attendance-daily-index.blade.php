@@ -1,4 +1,7 @@
 @extends('layouts.common')
+@section('css')
+<link rel="stylesheet" href="{{asset('css/components.css')}}">
+@endsection
 @section('content')
 <main class="attendances">
     <h2 class="attendances__title common-table-title">{{$date->format('Y年n月j日')}}</h2>
@@ -22,6 +25,8 @@
             <td class="attendances__list-detail">
                 @if($user->dailyAttendance)
                 <a href="/admin/attendance/detail/{{ $user->dailyAttendance->id }}" class="attendances__list-detail-link-text">詳細</a>
+                @else
+                <a href="/admin/attendance/{{$user->id}}/{{$date->format('Y-m-d')}}" class="attendances__list-detail-link-text">詳細</a>
                 @endif
             </td>
         </tr>

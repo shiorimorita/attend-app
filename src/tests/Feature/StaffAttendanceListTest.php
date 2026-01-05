@@ -42,7 +42,7 @@ class StaffAttendanceListTest extends TestCase
             $attendances[] = $attendance;
         }
 
-        $response = $this->actingAs($user)->get('/attendance/list');
+        $response = $this->actingAs($user)->get('/attendance/list?month=2025-12');
 
         foreach ($attendances as $attendance) {
             $response->assertSee($attendance->date->format('m/d'));

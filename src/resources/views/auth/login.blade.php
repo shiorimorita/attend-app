@@ -2,7 +2,7 @@
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 @endsection
-
+@section('no-page-bg','no-page-bg')
 @section('content')
 <main class="login">
     <h2 class="login__title">ログイン</h2>

@@ -80,11 +80,97 @@ class AdminStaffListTest extends TestCase
         ]);
     }
 
-    /* 「前月」を押下した時に表示月の前月の情報が表示される */
-    public function test_admin_can_view_previous_month_attendance() {}
+    /* 「前日」を押下した時に表示月の前日の情報が表示される */
+    public function test_admin_can_view_previous_day_attendance()
+    {
+        Carbon::setTestNow(Carbon::create(2025, 12, 21, 9, 0, 0));
 
-    /* 「翌月」を押下した時に表示月の前月の情報が表示される */
-    public function test_admin_can_view_next_month_attendance() {}
+        $admin = User::factory()->create(['role' => 'admin']);
+        $staff = User::factory()->create(['role' => 'staff']);
+
+        Attendance::factory()->create([
+            'user_id' => $staff->id,
+            'date' => '2025-12-20',
+            'clock_in' => '09:00:00',
+            'clock_out' => '18:00:00',
+        ]);
+
+        /** @var \App\Models\User $admin */
+        $day21 = $this->actingAs($admin)
+            ->get('/admin/attendance/list?date=2025-12-21')
+            ->assertStatus(200);
+
+        $day21->assertSee('date=2025-12-20');
+
+        $day20 = $this->actingAs($admin)
+            ->get('/admin/attendance/list?date=2025-12-20')
+            ->assertStatus(200);
+
+        $day20->assertSee('09:00');
+        $day20->assertSee('18:00');
+    }
+
+    /* 「翌日」を押下した時に表示月の前日の情報が表示される */
+    public function test_admin_can_view_next_day_attendance()
+    {
+        Carbon::setTestNow(Carbon::create(2025, 12, 21, 9, 0, 0));
+
+        $admin = User::factory()->create(['role' => 'admin']);
+        $staff = User::factory()->create(['role' => 'staff']);
+
+        Attendance::factory()->create([
+            'user_id' => $staff->id,
+            'date' => '2025-12-22',
+            'clock_in' => '09:00:00',
+            'clock_out' => '18:00:00',
+        ]);
+
+        /** @var \App\Models\User $admin */
+        $day21 = $this->actingAs($admin)
+            ->get('/admin/attendance/list?date=2025-12-21')
+            ->assertStatus(200);
+
+        $day21->assertSee('date=2025-12-22');
+
+        $day22 = $this->actingAs($admin)
+            ->get('/admin/attendance/list?date=2025-12-22')
+            ->assertStatus(200);
+
+        // 翌日の勤怠が表示されること（表示形式はUIに合わせて）
+        $day22->assertSee('09:00');
+        $day22->assertSee('18:00');
+    }
 
     /* 「詳細」を押下すると、その日の勤怠詳細画面に遷移する */
+    public function test_admin_can_navigate_to_attendance_detail()
+    {
+        Carbon::setTestNow(Carbon::create(2025, 12, 21, 9, 0, 0));
+
+        $admin = User::factory()->create(['role' => 'admin']);
+        $staff = User::factory()->create(['role' => 'staff']);
+
+        $attendance = Attendance::factory()->create([
+            'user_id' => $staff->id,
+            'date' => '2025-12-21',
+            'clock_in' => '09:00:00',
+            'clock_out' => '18:00:00',
+        ]);
+
+        /** @var \App\Models\User $admin */
+        $response = $this->actingAs($admin)
+            ->get(route('admin.attendance.list', ['date' => '2025-12-21']))
+            ->assertStatus(200);
+
+        $response->assertSee(
+            route('admin.attendance.detail', $attendance->id),
+            false
+        );
+
+        $detailResponse = $this->actingAs($admin)
+            ->get(route('admin.attendance.detail', $attendance->id))
+            ->assertStatus(200);
+
+        $detailResponse->assertSee('09:00');
+        $detailResponse->assertSee('18:00');
+    }
 }

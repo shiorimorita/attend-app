@@ -30,8 +30,8 @@ class AttendanceStampTest extends TestCase
 
         $response = $this->actingAs($user)->get('/attendance');
 
-        $response->assertSee($now->format('Y年m月d日'));
-        $response->assertSee('(' . $now->locale('ja')->isoFormat('ddd') . ')');
+        $response->assertSee($now->format('Y年n月j日'));
+        $response->assertSee('(' . ['日', '月', '火', '水', '木', '金', '土'][$now->dayOfWeek] . ')');
         $response->assertSee($now->format('H:i'));
     }
 

@@ -48,26 +48,27 @@ Route::middleware('auth')->group(function () {
 });
 
 /* 未ログイン */
-
 Route::get('/login', fn() => view('auth.login'))->name('login')->middleware('redirect.role');
 Route::get('/admin/login', fn() => view('auth.login'))->name('admin.login')->middleware('redirect.role');
 Route::post('/logout', LogoutController::class)->name('logout');
-
-/* staff & admin 共通 */
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/stamp_correction_request/list', [AttendanceCorrectionController::class, 'index']);
-});
 
 /* staff */
 Route::middleware(['auth', 'verified', 'role:staff'])->group(function () {
     Route::get('/attendance/list', [AttendanceController::class, 'myAttendances'])->name('attendance.list');
     Route::get('/attendance', [AttendanceController::class, 'index']);
+    Route::get('/attendance/detail/{id}', [AttendanceController::class, 'edit'])->name('attendance.detail');
+    Route::post('/attendance/detail/{id}', [AttendanceCorrectionController::class, 'store'])->name('attendance.correction.request');
     Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn']);
     Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut']);
     Route::post('/attendance/break-in', [AttendanceBreakController::class, 'breakIn']);
     Route::post('/attendance/break-out', [AttendanceBreakController::class, 'breakOut']);
-    Route::post('/attendance/detail/{id}', [AttendanceCorrectionController::class, 'store'])->name('attendance.correction.request');
-    Route::get('/attendance/detail/{id}', [AttendanceController::class, 'edit'])->name('attendance.detail');
+    Route::get('/attendance/{userId}/{date}', [AttendanceController::class, 'create']);
+    Route::post('/attendance/{userId}/{date}', [AttendanceController::class, 'store'])->name('attendance.store');
+});
+
+/* staff & admin 共通 */
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/stamp_correction_request/list', [AttendanceCorrectionController::class, 'index']);
 });
 
 /* admin */
@@ -75,9 +76,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/admin/attendance/list', [AttendanceController::class, 'dailyAttendance']);
     Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AttendanceCorrectionController::class, 'showApprove'])->name('stamp_correction_request.approve');
     Route::get('/admin/attendance/detail/{id}', [AttendanceController::class, 'edit']);
-    Route::post('/admin/attendance/detail/{id}', [AttendanceController::class, 'store']);
+    Route::post('/admin/attendance/detail/{id}', [AttendanceController::class, 'update']);
     Route::post('/stamp_correction_request/approve/{attendance_correct_request_id}', [AttendanceCorrectionController::class, 'approve'])->name('stamp_correction_request.approve.post');
     Route::get('/admin/staff/list', [UserController::class, 'index']);
     Route::get('/admin/attendance/staff/{id}', [AttendanceController::class, 'staff'])->name('admin.attendance.staff');
     Route::get('/attendance/export-csv', [AttendanceController::class, 'exportCsv'])->name('attendance.export.csv');
+    Route::get('/admin/attendance/{userId}/{date}', [AttendanceController::class, 'create']);
+    Route::post('/admin/attendance/{userId}/{date}', [AttendanceController::class, 'store'])->name('admin.attendance.store');
 });

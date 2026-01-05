@@ -2,6 +2,7 @@
 @section('css')
 <link rel="stylesheet" href="{{asset('css/register.css')}}">
 @endsection
+@section('no-page-bg','no-page-bg')
 @section('content')
 <main class="register">
     <h2 class="register__title">会員登録</h2>

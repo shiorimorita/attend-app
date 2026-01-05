@@ -119,3 +119,8 @@
 .attendances__list-table {
     margin-bottom: 60px;
 }
+
+.attendances__list-detail-link-text.is-button {
+    cursor: pointer;
+    text-align: left;
+}

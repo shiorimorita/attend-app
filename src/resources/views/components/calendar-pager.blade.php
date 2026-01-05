@@ -11,7 +11,6 @@
 'inputValue',
 'displayLabel'
 ])
-
 <div class="attendances__pager">
     <a href="{{ $baseUrl }}?{{ $inputName }}={{ $prevValue }}" class="attendances__pager-prev">
         <img src="{{ asset('images/arrow-left.png') }}" alt="{{ $prevAlt }}" class="attendances__pager-prev-img">

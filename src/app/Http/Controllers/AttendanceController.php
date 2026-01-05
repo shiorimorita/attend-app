@@ -12,6 +12,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\AttendanceCorrectionRequest;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Models\AttendanceBreak;
 
 class AttendanceController extends Controller
 {
@@ -42,9 +43,10 @@ class AttendanceController extends Controller
 
     public function myAttendances()
     {
-        $data = $this->buildMonthlyAttendances(Auth::id(), request('month'));
+        $user = Auth::user();
+        $data = $this->buildMonthlyAttendances($user->id, request('month'));
 
-        return view('attendance-index', $data);
+        return view('attendance-index', array_merge($data, ['user' => $user]));
     }
 
     public function staff($id)
@@ -108,6 +110,50 @@ class AttendanceController extends Controller
         return redirect('/attendance');
     }
 
+    public function create($userId, $date)
+    {
+        $user = User::findOrFail($userId);
+        $date = Carbon::parse($date);
+        $routeName = request()->is('admin/*') ? 'admin.attendance.store' : 'attendance.store';
+        $actionUrl = route($routeName, ['userId' => $user->id, 'date' => $date->format('Y-m-d')]);
+
+        $attendance = null;
+        $correction = null;
+        $readonly = false;
+
+        return view('attendance-check', compact('user', 'attendance', 'correction', 'readonly', 'date', 'actionUrl'));
+    }
+
+    public function store(AttendanceCorrectionRequest $request, $userId, $date)
+    {
+        $attendanceDate = Carbon::parse($date)->toDateString();
+
+        DB::transaction(function () use ($request, $userId, $attendanceDate) {
+
+            $attendance = Attendance::create([
+                'user_id' => $userId,
+                'date' => $attendanceDate,
+                'description' => $request->input('description'),
+                'clock_in' => $request->input('clock_in'),
+                'clock_out' => $request->input('clock_out'),
+            ]);
+
+            if ($request->filled('new_break.break_in') && $request->filled('new_break.break_out')) {
+                AttendanceBreak::create([
+                    'attendance_id' => $attendance->id,
+                    'break_in' => $request->input('new_break.break_in'),
+                    'break_out' => $request->input('new_break.break_out'),
+                ]);
+            }
+        });
+
+        if (request()->is('admin/*')) {
+            return redirect('/admin/attendance/list');
+        }
+
+        return redirect()->route('attendance.list');
+    }
+
     public function edit($id)
     {
         $user = Auth::user();
@@ -121,6 +167,12 @@ class AttendanceController extends Controller
         ])->findOrFail($id);
 
         $correction = $attendance->attendanceCorrections->first();
+
+        if ($user->isAdmin() && $isAdminDirectEdit) {
+            $correction = null;
+        }
+
+        $descriptionDefault = ($correction?->status === 'pending' ? $correction->description : null) ?? $attendance->description ?? '';
 
         $clockIn = $this->pickHi($correction?->clock_in, $attendance->clock_in);
         $clockOut = $this->pickHi($correction?->clock_out, $attendance->clock_out);
@@ -166,7 +218,7 @@ class AttendanceController extends Controller
 
         $mode = $user->isAdmin() ? 'admin' : 'user';
 
-        return view('attendance-check', compact('attendance', 'correction', 'readonly', 'mode', 'clockIn', 'clockOut', 'breaks', 'newBreak', 'actionUrl'));
+        return view('attendance-check', compact('attendance', 'correction', 'readonly', 'mode', 'clockIn', 'clockOut', 'breaks', 'newBreak', 'actionUrl', 'descriptionDefault'));
     }
 
     public function todayAttendance(Request $request)
@@ -176,7 +228,7 @@ class AttendanceController extends Controller
         return view('staff-index', compact('attendances', 'date'));
     }
 
-    public function store(AttendanceCorrectionRequest $request, $id)
+    public function update(AttendanceCorrectionRequest $request, $id)
     {
         $attendance = Attendance::with('breaks')->findOrFail($id);
 
@@ -189,7 +241,7 @@ class AttendanceController extends Controller
                 'status' => 'approved',
                 'approved_by' => Auth::id(),
                 'request_type' => 'admin_edit',
-                'description' => $request->input('description'),
+                'description' => $attendance->description,
             ]);
 
             foreach ($attendance->breaks as $break) {
@@ -203,6 +255,7 @@ class AttendanceController extends Controller
             $attendance->update([
                 'clock_in' => $request->clock_in,
                 'clock_out' => $request->clock_out,
+                'description' => $request->description,
             ]);
 
             foreach ($request->input('breaks', []) as $breakId => $b) {

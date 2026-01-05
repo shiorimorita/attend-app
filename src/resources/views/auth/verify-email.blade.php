@@ -2,7 +2,7 @@
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/verify-email.css') }}">
 @endsection
-
+@section('no-page-bg','no-page-bg')
 @section('content')
 <main class="verify-email">
     <p class="verify-email__message">登録していただいたメールアドレスに認証メールを送付しました。メール認証を完了してください。</p>

@@ -4,6 +4,11 @@ body {
     font-optical-sizing: auto;
     font-weight: 400;
     font-size: 16px;
+    background: #F0EFF2;
+}
+
+.no-page-bg {
+    background-color: transparent;
 }
 
 .content {

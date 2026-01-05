@@ -1,5 +1,8 @@
 @extends('layouts.common')
 @section('content')
+@section('css')
+<link rel="stylesheet" href="{{asset('css/components.css')}}">
+@endsection
 <main class="attendances">
     <h2 class="attendances__title common-table-title">{{request()->routeIs('admin.attendance.staff') ? $user->name . 'さんの勤怠' : '勤怠一覧'}}</h2>
     <x-calendar-pager base-url="/attendance/list" :prev-value="$prevMonth" :next-value="$nextMonth" prev-alt="前月の勤怠" next-alt="翌月の勤怠" input-type="month" input-name="month" :input-value="$month->format('Y-m')" :display-label="$month->format('Y/m')" prevLabel="前月" nextLabel="翌月" />
@@ -21,7 +24,9 @@
             <td class="attendances__list-detail">{{ $day['attendance']?->totalTime() ?? '' }}</td>
             <td class="attendances__list-detail">
                 @if($day['attendance'])
-                <a href="/attendance/detail/{{$day['attendance']->id}}" class="attendances__list-detail-link-text">詳細</a>
+                <a href="{{ request()->routeIs('admin.attendance.staff') ? '/admin' : '' }}/attendance/detail/{{$day['attendance']->id}}" class="attendances__list-detail-link-text">詳細</a>
+                @else
+                <a href="{{ request()->routeIs('admin.attendance.staff') ? '/admin' : '' }}/attendance/{{$user->id}}/{{$day['date']->format('Y-m-d')}}" class="attendances__list-detail-link-text">詳細</a>
                 @endif
             </td>
         </tr>
