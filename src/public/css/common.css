@@ -1,9 +1,6 @@
 /* common */
 body {
     font-family: "Inter";
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-size: 16px;
     background: #F0EFF2;
 }
 
@@ -41,6 +38,7 @@ button {
     background: #000;
     color: #fff;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .common-link {
@@ -53,7 +51,6 @@ button {
     line-height: 36px;
     padding-left: 21px;
     border-left: 8px solid #000;
-    margin-bottom: 98px;
 }
 
 .common-table {
@@ -91,11 +88,21 @@ button {
 }
 
 .header__inner {
-    line-height: 82px;
-    max-width: 1515px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 0 46px 0 25px;
+    height: 82px;
+}
+
+.header__logo {
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.header__logo-img {
+    display: block;
 }
 
 .header__nav-list {

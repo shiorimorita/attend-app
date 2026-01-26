@@ -4,7 +4,7 @@
 }
 
 .attendances__title {
-    margin-bottom: 43px;
+    margin-bottom: 47px;
 }
 
 .attendances__pager {
@@ -12,7 +12,6 @@
     background: #fff;
     justify-content: space-between;
     height: 60px;
-    align-items: center;
     border-radius: 10px;
     margin-bottom: 46px;
 }
@@ -31,8 +30,6 @@
 .attendances__pager-current-label {
     font-size: 20px;
     font-weight: bold;
-    line-height: auto;
-    display: block;
 }
 
 .attendances__pager-prev,
@@ -49,21 +46,26 @@
     margin-right: 24px;
 }
 
-.attendances__pager-prev-img,
-.attendances__pager-next-img {
-    width: 20px;
-    height: 15px;
-}
-
 .attendances__pager-prev-label,
 .attendances__pager-next-label {
     font-weight: bold;
     color: #737373;
 }
 
-.attendances__list-detail,
-.attendances__list-header {
+.attendances__list-header,
+.attendances__list-detail {
     text-align: left;
+}
+
+.attendances__list-header {
+    padding: 15px 0 12px 0;
+}
+
+.attendances__list-header:first-child {
+    padding-left: 57px;
+}
+
+.attendances__list-detail {
     padding: 14px 0;
 }
 
@@ -71,27 +73,24 @@
     position: absolute;
     opacity: 0;
     pointer-events: none;
-    width: 0;
-    height: 0;
 }
 
+/* スタッフ側の一覧 */
 .attendances__list-header-date {
-    padding-left: 55px;
     width: 246px;
 }
 
+.attendances__list-date {
+    padding-left: 55px;
+}
+
+/* 管理者側の一覧 */
 .attendances__list-header-name {
-    text-align: left;
-    padding-left: 57px;
     width: 238px;
 }
 
 .attendances__list-name {
     padding-left: 36px;
-}
-
-.attendances__list-date {
-    padding-left: 55px;
 }
 
 .attendances__list-header--shift {
@@ -108,19 +107,14 @@
     padding-left: 5px;
 }
 
+.attendances__list-table {
+    margin-bottom: 60px;
+}
+
 .attendances__csv-button {
     display: block;
     width: 184px;
     line-height: 50px;
     margin-left: auto;
     border-radius: 5px;
-}
-
-.attendances__list-table {
-    margin-bottom: 60px;
-}
-
-.attendances__list-detail-link-text.is-button {
-    cursor: pointer;
-    text-align: left;
 }

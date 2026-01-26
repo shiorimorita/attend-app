@@ -1,10 +1,6 @@
-body {
-    background: #F0EFF2;
-}
-
 .attendance__detail {
     width: 900px;
-    margin: 93px auto 77px auto;
+    margin: 93px auto 57px auto;
 }
 
 .attendance__detail-title {
@@ -15,21 +11,23 @@ body {
     background: #fff;
     border-radius: 10px;
     letter-spacing: 0.15rem;
-    margin-bottom: 36px;
 }
 
 .attendance__form-group {
     display: grid;
     align-items: center;
-    width: 100%;
     border-bottom: 2px solid #E1E1E1;
+}
+
+.attendance__form-group--display {
+    grid-template-columns: 357px 1fr;
 }
 
 .attendance__form-group--input {
     grid-template-columns: 333px 1fr;
 }
 
-.attendance__form-group--display {
+.attendance__form-group--remark-readonly {
     grid-template-columns: 357px 1fr;
 }
 
@@ -37,41 +35,23 @@ body {
     border-bottom: none;
 }
 
-.attendance__form-inner input,
-.attendance__form-inner textarea {
-    letter-spacing: 0.15rem;
-}
-
-.attendance__form-value {
-    font-weight: bold;
-}
-
-/* 名前 */
 .attendance__form-group:first-of-type {
     padding: 36px 0 24px 0;
 }
 
-/* 日付 */
 .attendance__form-group:nth-of-type(2) {
     padding: 35px 0;
 }
 
-/* 出勤 */
-.attendance__form-group:nth-of-type(3) {
-    padding: 31px 0 32px 0;
-}
-
-/* 休憩 */
+.attendance__form-group:nth-of-type(3),
 .attendance__form-group--input:has(.attendance__form-label-break) {
     padding: 31px 0 32px 0;
 }
 
-/* 休憩2 */
 .attendance__form-group:nth-last-of-type(2) {
-    padding: 36px 0 40px 0;
+    padding: 40px 0 36px 0;
 }
 
-/* 備考 */
 .attendance__form-group:last-of-type {
     padding: 40px 0 47px 0;
 }
@@ -90,6 +70,7 @@ body {
 .attendance__form-value {
     display: flex;
     align-items: center;
+    font-weight: bold;
 }
 
 .attendance__name-space {
@@ -101,7 +82,7 @@ body {
     border-radius: 4px;
     width: 103px;
     line-height: 29px;
-    padding: 5px 21px;
+    padding: 5px 0 0 12px;
 }
 
 .attendance__remark-textarea {
@@ -109,11 +90,14 @@ body {
     height: 72px;
     border: 1px solid #E1E1E1;
     border-radius: 4px;
-    padding: 5px 0 0 12px;
+    padding: 5px 0 5px 12px;
+    font-weight: bold;
 }
 
 .attendance__input-separator {
+    display: inline-block;
     margin: 0 43px 0 51px;
+    text-align: center;
 }
 
 .attendance__form-submit {
@@ -122,6 +106,7 @@ body {
     border-radius: 5px;
     margin-left: auto;
     display: block;
+    font-size: 22px;
 }
 
 .attendance__notice {
@@ -130,6 +115,7 @@ body {
     text-align: right;
     font-weight: bolder;
     font-size: 18px;
+    margin-top: 25px;
 }
 
 .attendance__buton--disabled {
@@ -148,8 +134,26 @@ body {
     font-weight: bold;
 }
 
-.attendance__input-time--readonly,
-.attendance__remark-textarea--readonly {
-    border: none;
+.attendance__input-time--readonly {
+    border: 1px solid transparent;
     pointer-events: none;
+    width: 55px;
+    padding: 5px 0;
+}
+
+.attendance__remark-textarea--readonly {
+    border: 1px solid transparent;
+    pointer-events: none;
+}
+
+.attendance__input-separator--readonly {
+    margin: 0 67px 0 72px;
+}
+
+.attendance__form-submit--staff {
+    margin-top: 36px;
+}
+
+.attendance__form-submit--admin {
+    margin-top: 56px;
 }

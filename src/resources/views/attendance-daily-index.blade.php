@@ -24,7 +24,7 @@
             <td class="attendances__list-detail">{{optional($user->dailyAttendance)->totalTime() ?? ''}}</td>
             <td class="attendances__list-detail">
                 @if($user->dailyAttendance)
-                <a href="/admin/attendance/detail/{{ $user->dailyAttendance->id }}" class="attendances__list-detail-link-text">詳細</a>
+                <a href="{{ route('admin.attendance.detail', $user->dailyAttendance->id) }}" class="attendances__list-detail-link-text">詳細</a>
                 @else
                 <a href="/admin/attendance/{{$user->id}}/{{$date->format('Y-m-d')}}" class="attendances__list-detail-link-text">詳細</a>
                 @endif

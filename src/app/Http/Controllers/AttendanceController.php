@@ -162,19 +162,20 @@ class AttendanceController extends Controller
         $attendance = Attendance::with([
             'breaks',
             'attendanceCorrections' => function ($q) {
-                $q->where('status', 'pending')->with('breakCorrections');
+                $q->latest()->with('breakCorrections');
             },
         ])->findOrFail($id);
 
         $correction = $attendance->attendanceCorrections->first();
 
-        if ($user->isAdmin() && $isAdminDirectEdit) {
-            $correction = null;
-        }
+        $isApproveView = $user->isAdmin() && $correction;
 
-        $descriptionDefault = ($correction?->status === 'pending' ? $correction->description : null) ?? $attendance->description ?? '';
+        $descriptionDefault =
+            ($correction?->status === 'pending' ? $correction->description : null)
+            ?? $attendance->description
+            ?? '';
 
-        $clockIn = $this->pickHi($correction?->clock_in, $attendance->clock_in);
+        $clockIn  = $this->pickHi($correction?->clock_in,  $attendance->clock_in);
         $clockOut = $this->pickHi($correction?->clock_out, $attendance->clock_out);
 
         $breakCorrectionMap = $correction
@@ -189,16 +190,19 @@ class AttendanceController extends Controller
             }
 
             return [
-                'id' => $break->id,
-                'break_in' => $this->pickHi($bc?->break_in, $break->break_in),
+                'id'        => $break->id,
+                'break_in'  => $this->pickHi($bc?->break_in,  $break->break_in),
                 'break_out' => $this->pickHi($bc?->break_out, $break->break_out),
             ];
         })->filter()->values();
 
-        $newBreak = ['break_in'  => '', 'break_out' => '',];
+        $newBreak = ['break_in' => '', 'break_out' => ''];
 
         if ($correction) {
-            $newBreakCorrection = $correction->breakCorrections->where('attendance_break_id', null)->first();
+            $newBreakCorrection = $correction->breakCorrections
+                ->where('attendance_break_id', null)
+                ->first();
+
             if ($newBreakCorrection) {
                 $newBreak = [
                     'break_in'  => $this->formatHi($newBreakCorrection->break_in),
@@ -207,18 +211,34 @@ class AttendanceController extends Controller
             }
         }
 
-        $readonly = $user->isAdmin() ? false : (bool) $correction;
+        if ($isApproveView) {
+            $readonly = true;
+            $actionUrl = url('/admin/attendance/detail/' . $attendance->id);
+        } else {
+            $readonly = $user->isAdmin() ? false : (bool) $correction;
 
-        $actionUrl = null;
-        if (! $readonly) {
-            $actionUrl = $isAdminDirectEdit
-                ? url('/admin/attendance/detail/' . $attendance->id)
-                : route('attendance.correction.request', ['id' => $attendance->id]);
+            $actionUrl = null;
+            if (! $readonly) {
+                $actionUrl = $isAdminDirectEdit
+                    ? url('/admin/attendance/detail/' . $attendance->id)
+                    : route('attendance.correction.request', ['id' => $attendance->id]);
+            }
         }
 
         $mode = $user->isAdmin() ? 'admin' : 'user';
 
-        return view('attendance-check', compact('attendance', 'correction', 'readonly', 'mode', 'clockIn', 'clockOut', 'breaks', 'newBreak', 'actionUrl', 'descriptionDefault'));
+        return view('attendance-check', compact(
+            'attendance',
+            'correction',
+            'readonly',
+            'mode',
+            'clockIn',
+            'clockOut',
+            'breaks',
+            'newBreak',
+            'actionUrl',
+            'descriptionDefault'
+        ));
     }
 
     public function todayAttendance(Request $request)
@@ -230,59 +250,108 @@ class AttendanceController extends Controller
 
     public function update(AttendanceCorrectionRequest $request, $id)
     {
-        $attendance = Attendance::with('breaks')->findOrFail($id);
+        $attendance = Attendance::with([
+            'breaks',
+            'attendanceCorrections' => function ($q) {
+                $q->where('status', 'pending')->with('breakCorrections');
+            },
+        ])->findOrFail($id);
 
-        DB::transaction(function () use ($request, $attendance) {
+        $correction = $attendance->attendanceCorrections->first();
 
-            $correction = $attendance->attendanceCorrections()->create([
-                'user_id' => $attendance->user_id,
-                'clock_in' => $attendance->clock_in,
-                'clock_out' => $attendance->clock_out,
-                'status' => 'approved',
-                'approved_by' => Auth::id(),
-                'request_type' => 'admin_edit',
-                'description' => $attendance->description,
-            ]);
+        if ($correction) {
+            DB::transaction(function () use ($correction) {
 
-            foreach ($attendance->breaks as $break) {
-                $correction->breakCorrections()->create([
-                    'attendance_break_id' => $break->id,
-                    'break_in' => $break->break_in,
-                    'break_out' => $break->break_out,
+                $correction->update([
+                    'status' => 'approved',
+                    'approved_by' => Auth::id(),
                 ]);
-            }
 
-            $attendance->update([
-                'clock_in' => $request->clock_in,
-                'clock_out' => $request->clock_out,
-                'description' => $request->description,
-            ]);
+                $attendance = $correction->attendance;
 
-            foreach ($request->input('breaks', []) as $breakId => $b) {
-
-                $breakIn = $b['break_in'] ?? null;
-                $breakOut = $b['break_out'] ?? null;
-
-                if (blank($breakIn) && blank($breakOut)) {
-                    $attendance->breaks()->where('id', $breakId)->delete();
-                    continue;
-                }
-
-                $attendance->breaks()->where('id', $breakId)->update([
-                    'break_in' => $breakIn,
-                    'break_out' => $breakOut,
+                $attendance->update([
+                    'clock_in' => $correction->clock_in,
+                    'clock_out' => $correction->clock_out,
+                    'description' => $correction->description,
                 ]);
-            }
 
-            if ($nb = $request->input('new_break')) {
-                if (!empty($nb['break_in']) && !empty($nb['break_out'])) {
+                foreach ($correction->breakCorrections as $bc) {
+
+                    if ($bc->is_deleted) {
+                        if ($bc->attendance_break_id) {
+                            $attendance->breaks()->where('id', $bc->attendance_break_id)->delete();
+                        }
+                        continue;
+                    }
+
+                    if ($bc->attendance_break_id) {
+                        $attendance->breaks()->where('id', $bc->attendance_break_id)->update([
+                            'break_in'  => $bc->break_in,
+                            'break_out' => $bc->break_out,
+                        ]);
+                        continue;
+                    }
+
                     $attendance->breaks()->create([
-                        'break_in'  => $nb['break_in'],
-                        'break_out' => $nb['break_out'],
+                        'break_in'  => $bc->break_in,
+                        'break_out' => $bc->break_out,
                     ]);
                 }
-            }
-        });
+            });
+        } else {
+
+            DB::transaction(function () use ($request, $attendance) {
+
+                $correction = $attendance->attendanceCorrections()->create([
+                    'user_id' => $attendance->user_id,
+                    'clock_in' => $attendance->clock_in,
+                    'clock_out' => $attendance->clock_out,
+                    'status' => 'approved',
+                    'approved_by' => Auth::id(),
+                    'request_type' => 'admin_edit',
+                    'description' => $attendance->description,
+                ]);
+
+                foreach ($attendance->breaks as $break) {
+                    $correction->breakCorrections()->create([
+                        'attendance_break_id' => $break->id,
+                        'break_in' => $break->break_in,
+                        'break_out' => $break->break_out,
+                    ]);
+                }
+
+                $attendance->update([
+                    'clock_in' => $request->clock_in,
+                    'clock_out' => $request->clock_out,
+                    'description' => $request->description,
+                ]);
+
+                foreach ($request->input('breaks', []) as $breakId => $b) {
+
+                    $breakIn = $b['break_in'] ?? null;
+                    $breakOut = $b['break_out'] ?? null;
+
+                    if (blank($breakIn) && blank($breakOut)) {
+                        $attendance->breaks()->where('id', $breakId)->delete();
+                        continue;
+                    }
+
+                    $attendance->breaks()->where('id', $breakId)->update([
+                        'break_in' => $breakIn,
+                        'break_out' => $breakOut,
+                    ]);
+                }
+
+                if ($nb = $request->input('new_break')) {
+                    if (!empty($nb['break_in']) && !empty($nb['break_out'])) {
+                        $attendance->breaks()->create([
+                            'break_in'  => $nb['break_in'],
+                            'break_out' => $nb['break_out'],
+                        ]);
+                    }
+                }
+            });
+        }
 
         return redirect('admin/attendance/list');
     }

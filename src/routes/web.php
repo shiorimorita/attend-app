@@ -20,10 +20,6 @@ use Illuminate\Http\Request;
 |
 */
 
-// Route::get('/', function () {
-//     return view('attendance-daily-index');
-// });
-
 Route::middleware('auth')->group(function () {
 
     Route::get('/email/verify', fn() => view('auth.verify-email'))
@@ -73,9 +69,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 /* admin */
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
-    Route::get('/admin/attendance/list', [AttendanceController::class, 'dailyAttendance']);
+    Route::get('/admin/attendance/list', [AttendanceController::class, 'dailyAttendance'])->name('admin.attendance.list');
     Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AttendanceCorrectionController::class, 'showApprove'])->name('stamp_correction_request.approve');
-    Route::get('/admin/attendance/detail/{id}', [AttendanceController::class, 'edit']);
+    Route::get('/admin/attendance/detail/{id}', [AttendanceController::class, 'edit'])->name('admin.attendance.detail');
     Route::post('/admin/attendance/detail/{id}', [AttendanceController::class, 'update']);
     Route::post('/stamp_correction_request/approve/{attendance_correct_request_id}', [AttendanceCorrectionController::class, 'approve'])->name('stamp_correction_request.approve.post');
     Route::get('/admin/staff/list', [UserController::class, 'index']);
