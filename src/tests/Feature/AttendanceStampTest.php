@@ -141,7 +141,7 @@ class AttendanceStampTest extends TestCase
         $this->actingAs($user)->post('/attendance/clock-out');
 
         $response = $this->actingAs($user)->get('/attendance');
-        $response->assertDontSee('出勤');
+        $response->assertDontSee('id="check-in-btn"', false);
     }
 
     /* 出勤時刻が勤怠一覧画面で確認できる */

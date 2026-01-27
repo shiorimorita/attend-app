@@ -104,14 +104,28 @@
         @endif
         {{-- admin --}}
         @else
-        @if($correction && $correction->status === 'approved')
+        @if(isset($isApprovalRoute) && $isApprovalRoute)
+        {{-- 承認専用画面 --}}
+        @if($correction && $correction->status === 'pending')
+        <button type="submit" class="attendance__form-submit--admin attendance__form-submit common-btn">
+            承認
+        </button>
+        @elseif($correction && $correction->status === 'approved')
         <button type="button" disabled class="attendance__form-submit--admin attendance__form-submit attendance__button--disabled">
             承認済み
         </button>
+        @endif
+        @else
+        {{-- 勤怠詳細画面 --}}
+        @if($correction && $correction->status === 'pending')
+        <p class="attendance__notice">
+            *承認待ちのため修正はできません。
+        </p>
         @else
         <button type="submit" class="attendance__form-submit--admin attendance__form-submit common-btn">
             修正
         </button>
+        @endif
         @endif
         @endif
     </form>

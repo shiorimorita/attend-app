@@ -29,17 +29,18 @@
             <nav class="header__nav">
                 <ul class="header__nav-list">
                     @if(Auth::user()->role === 'staff')
+                    @if(!isset($attendance) || !$attendance?->clock_out)
                     <li class="header__nav-item">
                         <a href="/attendance" class="header__nav-link">勤怠</a>
                     </li>
-                    <li class="header__nav-item">
-                        <a href="/attendance/list" class="header__nav-link">勤怠一覧</a>
-                    </li>
-                    <li class="header__nav-item">
-                        <a href="/stamp_correction_request/list" class="header__nav-link">申請</a>
-                    </li>
                     @endif
-                    @if(Auth::user()->role === 'admin')
+                    <li class="header__nav-item">
+                        <a href="/attendance/list" class="header__nav-link">{{ isset($attendance) && $attendance?->clock_out ? '今月の出勤一覧' : '勤怠一覧' }}</a>
+                    </li>
+                    <li class="header__nav-item">
+                        <a href="/stamp_correction_request/list" class="header__nav-link">{{ isset($attendance) && $attendance?->clock_out ? '申請一覧' : '申請' }}</a>
+                    </li>
+                    @else
                     <li class="header__nav-item">
                         <a href="/admin/attendance/list" class="header__nav-link">勤怠一覧</a>
                     </li>

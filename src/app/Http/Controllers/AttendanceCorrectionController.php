@@ -131,7 +131,10 @@ class AttendanceCorrectionController extends Controller
             ];
         }
 
-        return view('attendance-check', compact('attendance', 'correction', 'readonly', 'mode', 'clockIn', 'clockOut', 'breaks', 'newBreak', 'actionUrl'));
+        $descriptionDefault = $correction->description ?? '';
+        $isApprovalRoute = true;
+
+        return view('attendance-check', compact('attendance', 'correction', 'readonly', 'mode', 'clockIn', 'clockOut', 'breaks', 'newBreak', 'actionUrl', 'descriptionDefault', 'isApprovalRoute'));
     }
 
     public function approve(Request $request, $attendance_correct_request_id)

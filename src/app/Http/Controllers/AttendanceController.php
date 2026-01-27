@@ -168,7 +168,7 @@ class AttendanceController extends Controller
 
         $correction = $attendance->attendanceCorrections->first();
 
-        $isApproveView = $user->isAdmin() && $correction;
+        $isApproveView = $user->isAdmin() && $correction && $correction->status === 'pending';
 
         $descriptionDefault =
             ($correction?->status === 'pending' ? $correction->description : null)
@@ -215,7 +215,12 @@ class AttendanceController extends Controller
             $readonly = true;
             $actionUrl = url('/admin/attendance/detail/' . $attendance->id);
         } else {
-            $readonly = $user->isAdmin() ? false : (bool) $correction;
+            // 管理者が勤怠詳細画面にアクセスした場合でも、pending 状態なら readonly にする
+            if ($user->isAdmin() && $isAdminDirectEdit) {
+                $readonly = $correction && $correction->status === 'pending';
+            } else {
+                $readonly = $user->isAdmin() ? false : ($correction && $correction->status === 'pending');
+            }
 
             $actionUrl = null;
             if (! $readonly) {
@@ -257,25 +262,26 @@ class AttendanceController extends Controller
             },
         ])->findOrFail($id);
 
-        $correction = $attendance->attendanceCorrections->first();
+        $pendingCorrection = $attendance->attendanceCorrections->first();
 
-        if ($correction) {
-            DB::transaction(function () use ($correction) {
+        // pendingの補正リクエストがある場合 → 承認処理
+        if ($pendingCorrection) {
+            DB::transaction(function () use ($pendingCorrection) {
 
-                $correction->update([
+                $pendingCorrection->update([
                     'status' => 'approved',
                     'approved_by' => Auth::id(),
                 ]);
 
-                $attendance = $correction->attendance;
+                $attendance = $pendingCorrection->attendance;
 
                 $attendance->update([
-                    'clock_in' => $correction->clock_in,
-                    'clock_out' => $correction->clock_out,
-                    'description' => $correction->description,
+                    'clock_in' => $pendingCorrection->clock_in,
+                    'clock_out' => $pendingCorrection->clock_out,
+                    'description' => $pendingCorrection->description,
                 ]);
 
-                foreach ($correction->breakCorrections as $bc) {
+                foreach ($pendingCorrection->breakCorrections as $bc) {
 
                     if ($bc->is_deleted) {
                         if ($bc->attendance_break_id) {
@@ -299,9 +305,11 @@ class AttendanceController extends Controller
                 }
             });
         } else {
-
+            // pendingの補正リクエストがない場合 → 管理者による直接更新
+            // (初回編集、またはapproved後の再編集)
             DB::transaction(function () use ($request, $attendance) {
 
+                // 変更前の状態をapprovedの補正レコードとして保存
                 $correction = $attendance->attendanceCorrections()->create([
                     'user_id' => $attendance->user_id,
                     'clock_in' => $attendance->clock_in,
@@ -320,12 +328,14 @@ class AttendanceController extends Controller
                     ]);
                 }
 
+                // 勤怠データを新しい値で更新
                 $attendance->update([
                     'clock_in' => $request->clock_in,
                     'clock_out' => $request->clock_out,
                     'description' => $request->description,
                 ]);
 
+                // 既存の休憩時間を更新または削除
                 foreach ($request->input('breaks', []) as $breakId => $b) {
 
                     $breakIn = $b['break_in'] ?? null;
@@ -342,6 +352,7 @@ class AttendanceController extends Controller
                     ]);
                 }
 
+                // 新しい休憩時間を追加
                 if ($nb = $request->input('new_break')) {
                     if (!empty($nb['break_in']) && !empty($nb['break_out'])) {
                         $attendance->breaks()->create([
