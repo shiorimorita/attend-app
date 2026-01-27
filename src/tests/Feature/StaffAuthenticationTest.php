@@ -49,9 +49,9 @@ class StaffAuthenticationTest extends TestCase
     {
         $response = $this->post('/register', [
             'name' => 'Test User',
-            'email' => '',
+            'email' => 'test@example.com',
             'password' => 'pass',
-            'password_confirmation' => 'password',
+            'password_confirmation' => 'pass',
             'role' => 'staff',
         ]);
 
@@ -63,7 +63,7 @@ class StaffAuthenticationTest extends TestCase
     {
         $response = $this->post('/register', [
             'name' => 'Test User',
-            'email' => '',
+            'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'different_password',
             'role' => 'staff',
@@ -77,7 +77,7 @@ class StaffAuthenticationTest extends TestCase
     {
         $response = $this->post('/register', [
             'name' => 'Test User',
-            'email' => '',
+            'email' => 'test@example.com',
             'password' => '',
             'password_confirmation' => 'password',
             'role' => 'staff',
