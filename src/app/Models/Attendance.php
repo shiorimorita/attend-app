@@ -53,7 +53,7 @@ class Attendance extends Model
 
         $seconds = $this->clock_out->diffInSeconds($this->clock_in);
 
-        return (int) ceil($seconds / 60);
+        return (int) floor($seconds / 60);
     }
 
     public function breakMinutes(): int
@@ -72,7 +72,7 @@ class Attendance extends Model
 
                 $seconds = $out->diffInSeconds($in);
 
-                return (int) ceil($seconds / 60);
+                return (int) floor($seconds / 60);
             });
     }
 
