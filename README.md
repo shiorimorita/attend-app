@@ -7,7 +7,7 @@
 1. GitHub からリポジトリをクローン
 
 ```
-git clone git@github.com:shiorimorita/fruit-list.git
+git clone git@github.com:shiorimorita/attend-app.git
 ```
 
 2. クローンしたリポジトリのディレクトリに移動する
@@ -56,7 +56,6 @@ php artisan db:seed
 ### ユーザーデータ
 
 - **管理者アカウント**
-
   - メールアドレス: admin@example.com
   - パスワード: password
   - ロール: admin
@@ -74,18 +73,6 @@ php artisan db:seed
 - 休憩時間:
   - 必須休憩 12:00 ～ 13:00（1 時間）
   - ランダムで追加休憩（10 ～ 30 分）
-
-ダミーデータの作成は以下のコマンドで実行できます：
-
-```
-php artisan db:seed
-```
-
-データベースをリセットして再作成する場合：
-
-```
-php artisan migrate:fresh --seed
-```
 
 ## 使用技術(実行環境)
 
