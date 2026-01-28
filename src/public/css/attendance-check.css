@@ -84,7 +84,6 @@
     line-height: 29px;
     padding: 5px 0 0 24px;
     letter-spacing: 0.15rem;
-    outline: none;
 }
 
 .attendance__remark-textarea {
@@ -94,7 +93,6 @@
     border-radius: 4px;
     padding: 5px 0 5px 13px;
     font-weight: bold;
-    outline: none;
 }
 
 .attendance__input-separator {
