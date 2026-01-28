@@ -161,7 +161,7 @@ class AttendanceController extends Controller
         $attendance = Attendance::with([
             'breaks',
             'attendanceCorrections' => function ($q) {
-                $q->latest()->with('breakCorrections');
+                $q->where('status', 'pending')->latest()->with('breakCorrections');
             },
         ])->findOrFail($id);
 
