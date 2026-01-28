@@ -16,8 +16,8 @@
         @endif
     </p>
     <p class="attendance__status-date">{{now()->format('Y年n月j日')}}({{ ['日','月','火','水','木','金','土'][now()->dayOfWeek] }})</p>
-    <p class="attendance__status-time {{$attendance?->clock_out ? 'attendance__status-time--after-clockout' : ''}}" id="current-time">{{now()->format('H:i')}}
-        @if($attendance?->clock_out)
+    <p class="attendance__status-time {{$attendance?->clock_out ? 'attendance__status-time--after-clockout' : ''}}" id="current-time">{{now()->format('H:i')}}</p>
+    @if($attendance?->clock_out)
     <p class="attendance__status-clock-out">お疲れ様でした。</p>
     @elseif($isOnBreak)
     <form action="/attendance/break-out" method="post" class="attendance__status-form">

@@ -11,7 +11,6 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\AttendanceCorrectionRequest;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Models\AttendanceBreak;
 
 class AttendanceController extends Controller
@@ -367,7 +366,7 @@ class AttendanceController extends Controller
         return redirect('admin/attendance/list');
     }
 
-    public function exportCsv(Request $request): StreamedResponse
+    public function exportCsv(Request $request)
     {
         abort_unless(Auth::user()->isAdmin(), 403);
 
