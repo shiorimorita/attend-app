@@ -20,7 +20,7 @@ class CreateAttendanceCorrectionsTable extends Migration
             $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
             $table->time('clock_in');
             $table->time('clock_out');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('request_type')->default('staff_request')->index();
             $table->string('status')->default('pending')->index();
             $table->timestamps();
