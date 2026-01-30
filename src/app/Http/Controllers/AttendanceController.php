@@ -19,13 +19,18 @@ class AttendanceController extends Controller
 
     public function buildMonthlyAttendances(int $userId, ?string $monthParam): array
     {
-        $month = $monthParam ? Carbon::createFromFormat('Y-m', $monthParam)->startOfMonth() : now()->startOfMonth();
+        $month = $monthParam ? Carbon::parse($monthParam . '-01') : now()->startOfMonth();
+
+        $prevMonth = $month->copy()->subMonth()->format('Y-m');
+        $nextMonth = $month->copy()->addMonth()->format('Y-m');
+        $monthStart = $month->copy();
+        $monthEnd = $month->copy()->endOfMonth();
 
         $attendances = Attendance::with('breaks')->where('user_id', $userId)
-            ->whereBetween('date', [$month->toDateString(), $month->copy()->endOfMonth()->toDateString()])
+            ->whereBetween('date', [$monthStart->toDateString(), $monthEnd->toDateString()])
             ->get()->keyBy(fn($a) => $a->date->toDateString());
 
-        $period = CarbonPeriod::create($month, $month->copy()->endOfMonth());
+        $period = CarbonPeriod::create($monthStart, $monthEnd);
 
         $days = collect($period)->map(fn($day) => [
             'date' => $day,
@@ -35,8 +40,8 @@ class AttendanceController extends Controller
         return [
             'days' => $days,
             'month' => $month,
-            'prevMonth' => $month->copy()->subMonth()->format('Y-m'),
-            'nextMonth' => $month->copy()->addMonth()->format('Y-m'),
+            'prevMonth' => $prevMonth,
+            'nextMonth' => $nextMonth,
         ];
     }
 
